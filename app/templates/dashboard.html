@@ -1,0 +1,10 @@
+<!-- templates/dashboard.html -->
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome home, {{ current_user.username }}!</h1>
+</div>
+{% endblock %}
