@@ -4,7 +4,7 @@ from . import db, bcrypt, login
 from flask_login import UserMixin
 
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
     sessions = db.relationship('LoginSession', backref='user', lazy=True)
@@ -20,11 +20,11 @@ class User(UserMixin, db.Model):
     
 @login.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return User.query.get(user_id)
 
 class LoginSession(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=str(uuid.uuid4()))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
     login_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     logout_time = db.Column(db.DateTime)
 
