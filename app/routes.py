@@ -47,9 +47,7 @@ def login_user():
         session = LoginSession(user_id=user.id)
         db.session.add(session)
         db.session.commit()
-        
-        next_page = request.args.get('next')
-        return redirect(next_page) if next_page else redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard'))
 
     return render_template('login.html')
 
