@@ -1,7 +1,8 @@
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
 from . import app, db
-from .models import User
+from datetime import datetime
+from .models import User, LoginSession
 
 @app.route('/')
 def home():
@@ -31,9 +32,8 @@ def register_user():
 
 @app.route('/login', methods=['GET', 'POST'], endpoint='login')
 def login_user():
-    print(f"Authenticated: {current_user.is_authenticated}")  # Debugging statement
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
         username = request.form['username']
@@ -42,13 +42,24 @@ def login_user():
         if user is None or not user.check_password(password):
             flash('Invalid username or password', 'danger')
             return render_template('login.html')
+        
         flask_login_user(user)
-        return redirect(url_for('dashboard'))
+        session = LoginSession(user_id=user.id)
+        db.session.add(session)
+        db.session.commit()
+        
+        next_page = request.args.get('next')
+        return redirect(next_page) if next_page else redirect(url_for('dashboard'))
 
     return render_template('login.html')
 
 @app.route('/logout', endpoint='logout')
 def logout_user():
+    if current_user.is_authenticated:
+        session = LoginSession.query.filter_by(user_id=current_user.id, logout_time=None).order_by(LoginSession.login_time.desc()).first()
+        if session:
+            session.logout_time = datetime.utcnow()
+            db.session.commit()
     flask_logout_user()
     return redirect(url_for('home'))
 
