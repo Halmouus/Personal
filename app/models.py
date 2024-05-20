@@ -4,10 +4,10 @@ from . import db, bcrypt, login
 from flask_login import UserMixin
 
 class User(UserMixin, db.Model):
-    id = db.Column(db.String(36), primary_key=True, default=str(uuid.uuid4()))
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
-    login_sessions = db.relationship('LoginSession', backref='user', lazy=True)
+    sessions = db.relationship('LoginSession', backref='user', lazy=True)
 
     def set_password(self, password):
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -28,5 +28,7 @@ class LoginSession(db.Model):
     login_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     logout_time = db.Column(db.DateTime)
 
+    user = db.relationship('User', backref=db.backref('login_sessions', lazy=True))
+    
     def __repr__(self):
         return f"<LoginSession {self.id} for User {self.user_id}>"
