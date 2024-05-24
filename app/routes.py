@@ -33,7 +33,7 @@ def register_user():
 @app.route('/login', methods=['GET', 'POST'], endpoint='login')
 def login_user():
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard_user'))
 
     if request.method == 'POST':
         username = request.form['username']
@@ -43,12 +43,16 @@ def login_user():
             flash('Invalid username or password', 'danger')
             return render_template('login.html')
         
+        last_session = LoginSession.query.filter_by(user_id=user.id).order_by(LoginSession.login_time.desc()).first()
+        if last_session:
+            user.last_login_time = last_session.login_time
+
         flask_login_user(user)
         session = LoginSession(user_id=user.id)
         db.session.add(session)
-        user.last_login_time = datetime.utcnow()
         db.session.commit()
-        return redirect(url_for('dashboard'))
+        
+        return redirect(url_for('dashboard_user'))
 
     return render_template('login.html')
 
