@@ -5,16 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ZamZam{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script>
-        function displayDateTime() {
-            var now = new Date();
-            var dateTimeString = now.toLocaleString();
-            document.getElementById('currentDateTime').innerHTML = dateTimeString;
+    <style>
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
         }
-        setInterval(displayDateTime, 1000);
-    </script>
+        .dark-mode .navbar {
+            background-color: #333;
+        }
+        .dark-mode .nav-link {
+            color: #e0e0e0;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .slider.round {
+            border-radius: 34px;
+        }
+        .slider.round:before {
+            border-radius: 50%;
+        }
+    </style>
 </head>
-<body onload="displayDateTime()">
+<body class="{% if session.get('dark_mode') %}dark-mode{% endif %}">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="/">ZamZam</a>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -24,17 +71,22 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">Profile</a></li>
-                    {% else %}
+                {% else %}
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
                 {% endif %}
             </ul>
+            <div class="ml-auto">
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle" {% if session.get('dark_mode') %}checked{% endif %}>
+                    <span class="slider round"></span>
+                </label>
+            </div>
         </div>
     </nav>
 
     <div class="container mt-4">
-        <p id="currentDateTime"></p>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -44,5 +96,19 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
+
+    <script>
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            var darkModeEnabled = document.body.classList.toggle('dark-mode');
+            fetch('/toggle-dark-mode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ dark_mode: darkModeEnabled })
+            });
+        });
+    </script>
 </body>
 </html>

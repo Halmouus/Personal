@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, jsonfy, session
 from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
 from . import app, db
 from datetime import datetime
@@ -89,3 +89,9 @@ def profile():
         return redirect(url_for('profile'))
     
     return render_template('profile.html')
+
+@app.route('/toggle-dark-mode', methods=['POST'])
+def toggle_dark_mode():
+    data = request.get_json()
+    session['dark_mode'] = data['dark_mode']
+    return jsonify(success=True)
