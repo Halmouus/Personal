@@ -23,12 +23,10 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 class LoginSession(db.Model):
-    id = db.Column(db.String(36), primary_key=True, default=str(uuid.uuid4()))
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
     login_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     logout_time = db.Column(db.DateTime)
-
-    user = db.relationship('User', backref=db.backref('login_sessions', lazy=True))
     
     def __repr__(self):
         return f"<LoginSession {self.id} for User {self.user_id}>"
