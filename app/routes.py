@@ -1,5 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
+from flask_wtf.csrf import generate_csrf
 from . import app, db
 from datetime import datetime
 from .models import User, LoginSession
@@ -97,3 +98,7 @@ def toggle_dark_mode():
     dark_mode = data.get('dark_mode', False)
     session['dark_mode'] = dark_mode
     return jsonify(success=True)
+
+@app.context_processor
+def inject_csrf_token():
+    return dict(csrf_token=generate_csrf())
