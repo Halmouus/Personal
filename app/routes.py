@@ -96,4 +96,4 @@ def toggle_dark_mode():
     data = request.get_json()
     dark_mode = data.get('dark_mode', False)
     session['dark_mode'] = dark_mode
-    return '', 204
+    return jsonify(success=True)
