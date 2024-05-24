@@ -1,0 +1,403 @@
+Summary copied to clipboard.
+
+Project Structure:
+/
+    .gitignore
+    summary.txt
+    instance/
+        app.db
+    config.py
+    app/
+        models.py
+        templates/
+            login.html
+            dashboard.html
+            base.html
+            home.html
+            register.html
+            profile.html
+        check_tables.py
+        static/
+        __init__.py
+        routes.py
+    run.py
+    migrations/
+        alembic.ini
+        versions/
+        script.py.mako
+        env.py
+        README
+    requirements.txt
+    Procfile
+
+---
+
+Key Functions and Classes:
+
+In config.py:
+
+Class: `Config`
+
+
+In run.py:
+
+
+In app/models.py:
+
+Class: `User`
+  Method: `set_password`
+  Method: `check_password`
+  Method: `__repr__`
+
+Function: `load_user`
+
+Class: `LoginSession`
+  Method: `__repr__`
+
+
+In app/check_tables.py:
+
+
+In app/__init__.py:
+
+
+In app/routes.py:
+
+Function: `home`
+
+Function: `register_user`
+
+Function: `login_user`
+
+Function: `logout_user`
+
+Function: `dashboard_user`
+
+Function: `profile`
+
+
+In migrations/env.py:
+
+Function: `get_engine`
+
+Function: `get_engine_url`
+
+Function: `get_metadata`
+
+Function: `run_migrations_offline`
+
+Function: `run_migrations_online`
+
+
+---
+
+File Content:
+Each file's content is presented below, delimited by three `.
+
+
+In config.py:
+```
+import os
+
+class Config:
+    SECRET_KEY = 'a_super_secret_key_for_testing_purposes'  # Fixed key for sessions
+    SQLALCHEMY_DATABASE_URI = os.getenv('JAWSDB_URL') or 'sqlite:///app.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SESSION_COOKIE_SECURE = True  # Ensure cookies are secure
+    SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to cookies
+    SESSION_COOKIE_SAMESITE = 'Lax'  # Mitigate CSRF attacks
+```
+
+
+In run.py:
+```
+from app import app
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+
+In app/models.py:
+```
+import uuid
+from datetime import datetime
+from . import db, bcrypt, login
+from flask_login import UserMixin
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+    sessions = db.relationship('LoginSession', backref='user', lazy=True)
+
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
+    
+    def __repr__(self):
+        return f'<User {self.username!r}>'
+    
+@login.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+class LoginSession(db.Model):
+    id = db.Column(db.String(36), primary_key=True, default=str(uuid.uuid4()))
+    user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
+    login_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    logout_time = db.Column(db.DateTime)
+
+    user = db.relationship('User', backref=db.backref('login_sessions', lazy=True))
+    
+    def __repr__(self):
+        return f"<LoginSession {self.id} for User {self.user_id}>"
+```
+
+
+In app/check_tables.py:
+```
+from app import app, db
+
+with app.app_context():
+    print(db.engine.table_names())
+```
+
+
+In app/__init__.py:
+```
+from flask import Flask, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
+
+
+app = Flask(__name__)
+app.config.from_object('config.Config')
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+bcrypt = Bcrypt(app)
+
+login = LoginManager(app)
+login.login_view = 'login'
+
+# Import routes after initializing db to avoid circular imports
+from . import routes, models
+```
+
+
+In app/routes.py:
+```
+from flask import render_template, request, redirect, url_for, flash
+from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
+from . import app, db
+from datetime import datetime
+from .models import User, LoginSession
+
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/register', methods=['GET', 'POST'], endpoint='register')
+def register_user():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        user_exists = User.query.filter_by(username=username).first()
+        if user_exists:
+            flash('Username already exists', 'danger')
+            return redirect(url_for('register'))
+
+        user = User(username=username)
+        user.set_password(password)
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash('You are now registered and can log in', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'], endpoint='login')
+def login_user():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user is None or not user.check_password(password):
+            flash('Invalid username or password', 'danger')
+            return render_template('login.html')
+        
+        flask_login_user(user)
+        session = LoginSession(user_id=user.id)
+        db.session.add(session)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+
+    return render_template('login.html')
+
+@app.route('/logout', endpoint='logout')
+def logout_user():
+    if current_user.is_authenticated:
+        session = LoginSession.query.filter_by(user_id=current_user.id, logout_time=None).order_by(LoginSession.login_time.desc()).first()
+        if session:
+            session.logout_time = datetime.utcnow()
+            db.session.commit()
+    flask_logout_user()
+    return redirect(url_for('home'))
+
+@app.route('/dashboard', endpoint='dashboard')
+@login_required
+def dashboard_user():
+    return render_template('dashboard.html')
+
+@app.route('/profile', methods=['GET', 'POST'], endpoint='profile')
+@login_required
+def profile():
+    if request.method == 'POST':
+        username = request.form['username']
+        
+        # Check if the new username is already taken
+        user_exists = User.query.filter_by(username=username).first()
+        if user_exists and user_exists.id != current_user.id:
+            flash('Username already exists', 'danger')
+            return redirect(url_for('profile'))
+
+        current_user.username = username
+        db.session.commit()
+        flash('Your profile has been updated', 'success')
+        return redirect(url_for('profile'))
+    
+    return render_template('profile.html')
+```
+
+
+In migrations/env.py:
+```
+import logging
+from logging.config import fileConfig
+
+from flask import current_app
+
+from alembic import context
+
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
+
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
+fileConfig(config.config_file_name)
+logger = logging.getLogger('alembic.env')
+
+
+def get_engine():
+    try:
+        # this works with Flask-SQLAlchemy<3 and Alchemical
+        return current_app.extensions['migrate'].db.get_engine()
+    except (TypeError, AttributeError):
+        # this works with Flask-SQLAlchemy>=3
+        return current_app.extensions['migrate'].db.engine
+
+
+def get_engine_url():
+    try:
+        return get_engine().url.render_as_string(hide_password=False).replace(
+            '%', '%%')
+    except AttributeError:
+        return str(get_engine().url).replace('%', '%%')
+
+
+# add your model's MetaData object here
+# for 'autogenerate' support
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
+config.set_main_option('sqlalchemy.url', get_engine_url())
+target_db = current_app.extensions['migrate'].db
+
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option("my_important_option")
+# ... etc.
+
+
+def get_metadata():
+    if hasattr(target_db, 'metadatas'):
+        return target_db.metadatas[None]
+    return target_db.metadata
+
+
+def run_migrations_offline():
+    """Run migrations in 'offline' mode.
+
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don't even need a DBAPI to be available.
+
+    Calls to context.execute() here emit the given string to the
+    script output.
+
+    """
+    url = config.get_main_option("sqlalchemy.url")
+    context.configure(
+        url=url, target_metadata=get_metadata(), literal_binds=True
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_online():
+    """Run migrations in 'online' mode.
+
+    In this scenario we need to create an Engine
+    and associate a connection with the context.
+
+    """
+
+    # this callback is used to prevent an auto-migration from being generated
+    # when there are no changes to the schema
+    # reference: http://alembic.zzzcomputing.com/en/latest/cookbook.html
+    def process_revision_directives(context, revision, directives):
+        if getattr(config.cmd_opts, 'autogenerate', False):
+            script = directives[0]
+            if script.upgrade_ops.is_empty():
+                directives[:] = []
+                logger.info('No changes in schema detected.')
+
+    conf_args = current_app.extensions['migrate'].configure_args
+    if conf_args.get("process_revision_directives") is None:
+        conf_args["process_revision_directives"] = process_revision_directives
+
+    connectable = get_engine()
+
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=get_metadata(),
+            **conf_args
+        )
+
+        with context.begin_transaction():
+            context.run_migrations()
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
+```
+
+
+---
+
