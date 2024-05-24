@@ -91,7 +91,9 @@ def profile():
     return render_template('profile.html')
 
 @app.route('/toggle-dark-mode', methods=['POST'])
+@login_required
 def toggle_dark_mode():
     data = request.get_json()
-    session['dark_mode'] = data['dark_mode']
-    return jsonify(success=True)
+    dark_mode = data.get('dark_mode', False)
+    session['dark_mode'] = dark_mode
+    return '', 204
