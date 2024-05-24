@@ -6,7 +6,19 @@
 <div class="container">
     <h1>Welcome home, {{ current_user.username }}!</h1>
     {% if current_user.last_login_time %}
-    <p>Last login on: {{ current_user.last_login_time }}</p>
+    <p>Last login on: <span id="lastLoginTime" data-time="{{ current_user.last_login_time }}"></span></p>
+    <script>
+        function convertToLocalTime(utcTime) {
+            var localTime = new Date(utcTime);
+            return localTime.toLocaleString();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var lastLoginElement = document.getElementById('lastLoginTime');
+            var utcTime = lastLoginElement.getAttribute('data-time');
+            lastLoginElement.innerHTML = convertToLocalTime(utcTime);
+        });
+    </script>
     {% endif %}
 </div>
 {% endblock %}
