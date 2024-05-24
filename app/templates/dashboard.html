@@ -10,6 +10,7 @@
     <script>
         function convertToLocalTime(utcTime) {
             var localTime = new Date(utcTime);
+            localTime.setHours(localTime.getHours() + 1); // Add one hour
             return localTime.toLocaleString();
         }
 
