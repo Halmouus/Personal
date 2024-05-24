@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash, jsonfy, session
+from flask import render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
 from . import app, db
 from datetime import datetime
