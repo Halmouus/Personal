@@ -116,7 +116,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'
+                    'X-CSRFToken': '{{ csrf_token }}'  // Notice the change here
                 },
                 body: JSON.stringify({ dark_mode: darkModeEnabled })
             });
