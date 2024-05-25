@@ -1,6 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
-from flask_wtf.csrf import generate_csrf
 from . import app, db
 from datetime import datetime
 from .models import User, LoginSession
@@ -34,7 +33,7 @@ def register_user():
 @app.route('/login', methods=['GET', 'POST'], endpoint='login')
 def login_user():
     if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))  # Correct endpoint name
+        return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
         username = request.form['username']
@@ -52,10 +51,9 @@ def login_user():
         session = LoginSession(user_id=user.id)
         db.session.add(session)
         db.session.commit()
-        return redirect(url_for('dashboard'))  # Correct endpoint name
+        return redirect(url_for('dashboard'))
 
     return render_template('login.html')
-
 
 @app.route('/logout', endpoint='logout')
 def logout_user():
@@ -78,7 +76,6 @@ def profile():
     if request.method == 'POST':
         username = request.form['username']
         
-        # Check if the new username is already taken
         user_exists = User.query.filter_by(username=username).first()
         if user_exists and user_exists.id != current_user.id:
             flash('Username already exists', 'danger')
@@ -98,7 +95,3 @@ def toggle_dark_mode():
     dark_mode = data.get('dark_mode', False)
     session['dark_mode'] = dark_mode
     return jsonify(success=True)
-
-@app.context_processor
-def inject_csrf_token():
-    return dict(csrf_token=generate_csrf())
