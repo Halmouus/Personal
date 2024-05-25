@@ -76,6 +76,10 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ dark_mode: darkModeEnabled })
+            }).then(response => {
+                if (response.ok) {
+                    localStorage.setItem('darkMode', darkModeEnabled);
+                }
             });
         }
 
