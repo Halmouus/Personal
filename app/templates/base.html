@@ -5,8 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ZamZam{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .dark-mode .navbar {
+            background-color: #333;
+        }
+        .dark-mode .nav-link {
+            color: #e0e0e0;
+        }
         .switch {
             position: relative;
             display: inline-block;
@@ -67,10 +76,6 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ dark_mode: darkModeEnabled })
-            }).then(response => {
-                if (response.ok) {
-                    localStorage.setItem('darkMode', darkModeEnabled);
-                }
             });
         }
 
