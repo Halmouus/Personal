@@ -1,8 +1,10 @@
+import os
+from werkzeug.utils import secure_filename
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
 from . import app, db
 from datetime import datetime
-from .models import User, LoginSession, Token, TokenTransaction
+from .models import User, LoginSession, Token, TokenTransaction, Status
 
 @app.route('/')
 def home():
@@ -87,18 +89,34 @@ def dashboard_user():
 @login_required
 def profile():
     if request.method == 'POST':
-        pseudo = request.form['pseudo']
+        pseudo = request.form.get('pseudo')
+        status_text = request.form.get('status')
+        profile_picture = request.files.get('profile_picture')
         
-        pseudo_exists = User.query.filter(User.pseudo == pseudo, User.id != current_user.id).first()
-        if pseudo_exists:
-            flash('Too bad! Habiba already taken', 'danger')
-            return redirect(url_for('profile'))
+        if pseudo:
+            pseudo_exists = User.query.filter(User.pseudo == pseudo, User.id != current_user.id).first()
+            if pseudo_exists:
+                flash('Too bad! Habiba already taken', 'danger')
+                return redirect(url_for('profile'))
+            current_user.pseudo = pseudo
         
-        current_user.pseudo = pseudo
+        if status_text:
+            new_status = Status(user_id=current_user.id, text=status_text)
+            db.session.add(new_status)
+
+        if profile_picture:
+            filename = secure_filename(profile_picture.filename)
+            profile_picture_path = os.path.join('static/profile_pics', filename)
+            profile_picture.save(profile_picture_path)
+            current_user.profile_picture = profile_picture_path
+        
         db.session.commit()
-        flash('Your Habiba has a fresh new name!', 'success')
+        flash('Your profile has been updated!', 'success')
         return redirect(url_for('profile'))
-    return render_template('profile.html', title='Profile')
+
+    statuses = Status.query.filter_by(user_id=current_user.id).order_by(Status.timestamp.desc()).all()
+    return render_template('profile.html', title='Profile', user=current_user, statuses=statuses)
+
 
 @app.route('/toggle-dark-mode', methods=['POST'])
 @login_required
@@ -190,3 +208,21 @@ def leaderboard():
     current_user_rank = User.query.filter(User.tokens > current_user.tokens).count() + 1
 
     return render_template('leaderboard.html', users=users, current_user_rank=current_user_rank)
+
+@app.route('/like_status/<int:status_id>', methods=['POST'])
+@login_required
+def like_status(status_id):
+    status = Status.query.get_or_404(status_id)
+    status.likes += 1
+    db.session.commit()
+    return jsonify({'likes': status.likes, 'dislikes': status.dislikes})
+
+
+@app.route('/dislike_status/<int:status_id>', methods=['POST'])
+@login_required
+def dislike_status(status_id):
+    status = Status.query.get_or_404(status_id)
+    status.dislikes += 1
+    db.session.commit()
+    return jsonify({'likes': status.likes, 'dislikes': status.dislikes})
+

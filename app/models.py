@@ -11,7 +11,9 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(128), nullable=False)
     last_login_time = db.Column(db.DateTime)
     tokens = db.Column(db.Integer, default=0)
+    profile_picture = db.Column(db.String(150), nullable=True)
     sessions = db.relationship('LoginSession', backref='user', lazy=True)
+    statuses = db.relationship('Status', backref='user', lazy=True)
 
     def set_password(self, password):
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -54,3 +56,12 @@ class TokenTransaction(db.Model):
     sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_transactions')
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_transactions')
 
+class Status(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
+    text = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    likes = db.Column(db.Integer, default=0)
+    dislikes = db.Column(db.Integer, default=0)
+
+    user = db.relationship('User', backref='statuses')
