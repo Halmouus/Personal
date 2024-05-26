@@ -263,10 +263,10 @@ def network():
 @login_required
 def view_profile(user_id):
     app.logger.info(f"Fetching profile for user ID: {user_id}")
-    user = User.query.filter_by(unique_id=user_id).first_or_404()
+    user = User.query.get_or_404(user_id)
     if not user:
         app.logger.error(f"User with ID {user_id} not found.")
+        return "User not found", 404
     statuses = Status.query.filter_by(user_id=user.id).order_by(Status.timestamp.desc()).all()
     return render_template('view_profile.html', user=user, statuses=statuses)
-
 
