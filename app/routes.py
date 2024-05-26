@@ -114,6 +114,10 @@ def share_tokens():
             flash('Recipient and amount are required.', 'danger')
             return redirect(url_for('share_tokens'))
         
+        if recipient_username == current_user.username:
+            flash('You cannot send tokens to yourself', 'danger')
+            return redirect(url_for('share_tokens'))  
+             
         try:
             amount = int(amount)
         except ValueError:
@@ -158,10 +162,15 @@ def transaction_history():
     
     return render_template('transaction_history.html', sent_transactions=sent_transactions, received_transactions=received_transactions)
 
-@app.route('/autocomplete_usernames')
+
+@app.route('/autocomplete_usernames', methods=['GET'])
 @login_required
 def autocomplete_usernames():
     query = request.args.get('query', '')
-    users = User.query.filter(User.username.ilike(f'%{query}%')).all()
+    if not query:
+        return jsonify([])
+
+    users = User.query.filter(User.username.ilike(f'{query}%'), User.id != current_user.id).all()
     usernames = [user.username for user in users]
+
     return jsonify(usernames)
