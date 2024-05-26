@@ -247,9 +247,12 @@ def like_status(status_id):
             db.session.delete(existing_like)
         else:
             existing_like.is_like = True
+            status.likes += 1
+            status.dislikes -= 1
     else:
         new_like = LikeDislike(user_id=current_user.id, status_id=status_id, is_like=True)
         db.session.add(new_like)
+        status.likes += 1
 
     db.session.commit()
 
@@ -270,9 +273,12 @@ def dislike_status(status_id):
             db.session.delete(existing_dislike)
         else:
             existing_dislike.is_like = False
+            status.likes -= 1
+            status.dislikes += 1
     else:
         new_dislike = LikeDislike(user_id=current_user.id, status_id=status_id, is_like=False)
         db.session.add(new_dislike)
+        status.dislikes += 1
 
     db.session.commit()
 

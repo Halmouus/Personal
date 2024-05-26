@@ -18,8 +18,8 @@
         <p>{{ status.text }}</p>
         <small>{{ status.timestamp }}</small>
         <div>
-            <button class="btn btn-link like-btn" data-id="{{ status.id }}">👍 {{ status.likes }}</button>
-            <button class="btn btn-link dislike-btn" data-id="{{ status.id }}">👎 {{ status.dislikes }}</button>
+            <button class="btn btn-link like-btn {{ 'highlight' if current_user.has_liked(status) else '' }}" data-id="{{ status.id }}">👍 {{ status.likes }}</button>
+            <button class="btn btn-link dislike-btn {{ 'highlight' if current_user.has_disliked(status) else '' }}" data-id="{{ status.id }}">👎 {{ status.dislikes }}</button>
         </div>
     </div>
     {% endfor %}
@@ -46,6 +46,25 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    function updateButtons(statusId, likes, dislikes, liked, disliked) {
+        const likeBtn = document.querySelector(`#status-${statusId} .like-btn`);
+        const dislikeBtn = document.querySelector(`#status-${statusId} .dislike-btn`);
+
+        likeBtn.innerHTML = `👍 ${likes}`;
+        dislikeBtn.innerHTML = `👎 ${dislikes}`;
+
+        if (liked) {
+            likeBtn.classList.add('highlight');
+            dislikeBtn.classList.remove('highlight');
+        } else if (disliked) {
+            likeBtn.classList.remove('highlight');
+            dislikeBtn.classList.add('highlight');
+        } else {
+            likeBtn.classList.remove('highlight');
+            dislikeBtn.classList.remove('highlight');
+        }
+    }
+
     document.querySelectorAll('.like-btn').forEach(function(button) {
         button.addEventListener('click', function() {
             var statusId = this.getAttribute('data-id');
@@ -57,8 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                document.querySelector('#status-' + statusId + ' .like-btn').innerHTML = '👍 ' + data.likes;
-                document.querySelector('#status-' + statusId + ' .dislike-btn').innerHTML = '👎 ' + data.dislikes;
+                updateButtons(statusId, data.likes, data.dislikes, data.liked, data.disliked);
             });
         });
     });
@@ -74,8 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                document.querySelector('#status-' + statusId + ' .like-btn').innerHTML = '👍 ' + data.likes;
-                document.querySelector('#status-' + statusId + ' .dislike-btn').innerHTML = '👎 ' + data.dislikes;
+                updateButtons(statusId, data.likes, data.dislikes, data.liked, data.disliked);
             });
         });
     });
