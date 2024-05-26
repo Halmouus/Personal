@@ -112,6 +112,7 @@ def profile():
             profile_picture_path = os.path.join(profile_picture_dir, filename)
             profile_picture.save(profile_picture_path)
             current_user.profile_picture = filename
+            flash(f'Profile picture successfully uploaded to {profile_picture_path}', 'success')
         
         db.session.commit()
         flash('Your profile has been updated!', 'success')
