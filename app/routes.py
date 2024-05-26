@@ -110,10 +110,15 @@ def profile():
             if not os.path.exists(profile_picture_dir):
                 os.makedirs(profile_picture_dir)
             profile_picture_path = os.path.join(profile_picture_dir, filename)
+            
+            # Save and read the file stream
             profile_picture.save(profile_picture_path)
+            profile_picture.stream.seek(0)
+            # Add any further file processing here if needed
+            
             current_user.profile_picture = filename
             flash(f'Profile picture successfully uploaded to {profile_picture_path}', 'success')
-        
+
         db.session.commit()
         flash('Your profile has been updated!', 'success')
         return redirect(url_for('profile'))
