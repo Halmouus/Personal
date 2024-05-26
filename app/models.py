@@ -7,8 +7,8 @@ from flask_login import UserMixin
 class User(UserMixin, db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     username = db.Column(db.String(80), unique=True, nullable=False)
-    pseudo = db.Column(db.String(50), unique=True, nullable=False, default=lambda: f"user{random.randint(1000, 9999)}")
-    password = db.Column(db.String(128), nullable=True)
+    pseudo = db.Column(db.String(50), unique=True, nullable=True, default=lambda: f"user{random.randint(1000, 9999)}")
+    password = db.Column(db.String(128), nullable=False)
     last_login_time = db.Column(db.DateTime)
     tokens = db.Column(db.Integer, default=0)
     sessions = db.relationship('LoginSession', backref='user', lazy=True)
