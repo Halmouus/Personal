@@ -107,6 +107,7 @@ def profile():
         if profile_picture:
             filename = secure_filename(profile_picture.filename)
             profile_picture_path = os.path.join('static/profile_pics', filename)
+            os.makedirs(os.path.dirname(profile_picture_path), exist_ok=True)
             profile_picture.save(profile_picture_path)
             current_user.profile_picture = profile_picture_path
         
