@@ -12,7 +12,7 @@
             <datalist id="usernames"></datalist>
         </div>
         <div class="form-group">
-            <label for="amount">Habiba Points:</label>
+            <label for="amount">Habiba Points you wanna give:</label>
             <input type="number" id="amount" name="amount" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-primary">Share Love</button>
@@ -30,9 +30,9 @@
             .then(data => {
                 var datalist = document.getElementById('usernames');
                 datalist.innerHTML = '';
-                data.forEach(function(username) {
+                data.forEach(function(pseudo) {
                     var option = document.createElement('option');
-                    option.value = username;
+                    option.value = pseudo;
                     datalist.appendChild(option);
                 });
             });

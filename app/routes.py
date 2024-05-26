@@ -96,7 +96,7 @@ def profile():
         
         current_user.pseudo = pseudo
         db.session.commit()
-        flash('Your Habiba has fresh new name!', 'success')
+        flash('Your Habiba has a fresh new name!', 'success')
         return redirect(url_for('profile'))
     return render_template('profile.html', title='Profile')
 
@@ -120,7 +120,7 @@ def share_tokens():
             flash('Recipient and amount are required.', 'danger')
             return redirect(url_for('share_tokens'))
         
-        if recipient_username == current_user.username:
+        if recipient_username == current_user.pseudo:
             flash('You cannot send tokens to yourself', 'danger')
             return redirect(url_for('share_tokens'))  
              
@@ -134,13 +134,13 @@ def share_tokens():
             flash('Amount must be greater than zero.', 'danger')
             return redirect(url_for('share_tokens'))
 
-        recipient = User.query.filter_by(username=recipient_username).first()
+        recipient = User.query.filter_by(pseudo=recipient_username).first()
         if not recipient:
-            flash('Recipient not found.', 'danger')
+            flash('Habiba not found.', 'danger')
             return redirect(url_for('share_tokens'))
         
         if current_user.tokens < amount:
-            flash('You do not have enough tokens.', 'danger')
+            flash('Poor! Not enough Habiba Points!', 'danger')
             return redirect(url_for('share_tokens'))
 
         current_user.tokens -= amount
@@ -155,7 +155,7 @@ def share_tokens():
         db.session.add(transaction)
         db.session.commit()
         
-        flash('Tokens successfully shared.', 'success')
+        flash('Habibas successfully shared.', 'success')
         return redirect(url_for('share_tokens'))
     
     return render_template('share_tokens.html')
