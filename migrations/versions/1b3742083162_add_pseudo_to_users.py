@@ -15,9 +15,13 @@ branch_labels = None
 depends_on = None
 
 def upgrade():
-    with op.batch_alter_table('user') as batch_op:
-        batch_op.alter_column('pseudo', existing_type=sa.String(length=80), nullable=False)
-        batch_op.create_unique_constraint('uq_user_pseudo', ['pseudo'])
+    op.create_table('like_dislike',
+        sa.Column('id', sa.String(length=36), primary_key=True, default=uuid4),
+        sa.Column('user_id', sa.String(length=36), sa.ForeignKey('user.id')),
+        sa.Column('status_id', sa.Integer, sa.ForeignKey('status.id')),
+        sa.Column('is_like', sa.Boolean, nullable=False)
+    )
+
 
 def downgrade():
     with op.batch_alter_table('user') as batch_op:
