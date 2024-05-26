@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, jsonify, s
 from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
 from . import app, db
 from datetime import datetime
-from .models import User, LoginSession
+from .models import User, LoginSession, Token
 
 @app.route('/')
 def home():
@@ -50,6 +50,12 @@ def login_user():
         flask_login_user(user)
         session = LoginSession(user_id=user.id)
         db.session.add(session)
+
+        # Issue a token to the user
+        user.tokens += 1
+        token = Token(user_id=user.id, token_value=1)
+        db.session.add(token)
+
         db.session.commit()
         return redirect(url_for('dashboard'))
 
