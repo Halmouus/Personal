@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Leaderboard</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Username</th>
+            <th scope="col">Tokens</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr class="{% if user.id == current_user.id %}table-warning{% endif %}">
+                <th scope="row">
+                    {% if user.id == current_user.id %}
+                        <i class="fas fa-star" style="color: gold;"></i> {{ loop.index }}
+                    {% else %}
+                        {{ loop.index }}
+                    {% endif %}
+                </th>
+                <td>{{ user.username }}</td>
+                <td><i class="fas fa-coins" style="color: gold;"></i> {{ user.tokens }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

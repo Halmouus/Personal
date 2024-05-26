@@ -6,6 +6,7 @@
     <title>{% block title %}ZamLBook{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body.dark-mode {
             background-color: #121212;
@@ -68,6 +69,9 @@
         .token-display i {
             margin-right: 5px;
         }
+        .table-warning {
+            background-color: #ffebcc;
+        }
     </style>
     <script>
         function displayDateTime() {
@@ -114,6 +118,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">Profile</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('share_tokens') }}">Give Love</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
                 {% else %}
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>

@@ -175,3 +175,12 @@ def autocomplete_usernames():
     usernames = [user.username for user in users]
 
     return jsonify(usernames)
+
+
+@app.route('/leaderboard')
+@login_required
+def leaderboard():
+    users = User.query.order_by(User.tokens.desc()).limit(100).all()
+    current_user_rank = User.query.filter(User.tokens > current_user.tokens).count() + 1
+
+    return render_template('leaderboard.html', users=users, current_user_rank=current_user_rank)
