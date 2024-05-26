@@ -258,3 +258,10 @@ def search():
 @login_required
 def network():
     return render_template('network.html')
+
+@app.route('/profile/<int:user_id>')
+@login_required
+def view_profile(user_id):
+    user = User.query.get_or_404(user_id)
+    statuses = Status.query.filter_by(user_id=user.id).order_by(Status.timestamp.desc()).all()
+    return render_template('view_profile.html', user=user, statuses=statuses)
