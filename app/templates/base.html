@@ -112,6 +112,11 @@
                 {% endif %}
             </ul>
             <div class="ml-auto">
+                {% if current_user.is_authenticated %}
+                <span class="nav-link">
+                    <i class="fas fa-coins" style="color: gold;"></i> {{ current_user.tokens }}
+                </span>
+                {% endif %}
                 <label class="switch">
                     <input type="checkbox" id="darkModeToggle" {% if session.get('dark_mode') %}checked{% endif %} onclick="toggleDarkMode()">
                     <span class="slider round"></span>
