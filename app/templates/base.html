@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ZamLBook{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body.dark-mode {
             background-color: #121212;
@@ -119,7 +120,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
                 {% endif %}
             </ul>
-            <div class="ml-auto">
+            <div class="ml-auto d-flex align-items-center">
                 {% if current_user.is_authenticated %}
                 <div class="token-display">
                     <i class="fas fa-coins" style="color: gold;"></i> {{ current_user.tokens }}
@@ -129,7 +130,7 @@
                     <input type="checkbox" id="darkModeToggle" {% if session.get('dark_mode') %}checked{% endif %} onclick="toggleDarkMode()">
                     <span class="slider round"></span>
                 </label>
-            </div>
+            </div>            
         </div>
     </nav>
     <div class="container mt-4">
