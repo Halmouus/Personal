@@ -2,9 +2,10 @@ import os
 from werkzeug.utils import secure_filename
 from flask import render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
+from . import socketio
 from . import app, db
 from datetime import datetime
-from .models import User, LoginSession, Token, TokenTransaction, Status, LikeDislike
+from .models import User, LoginSession, Token, TokenTransaction, Status, LikeDislike, Notification
 
 @app.route('/')
 def home():
@@ -163,11 +164,11 @@ def share_tokens():
 
         recipient = User.query.filter_by(pseudo=recipient_username).first()
         if not recipient:
-            flash('Habiba not found.', 'danger')
+            flash('User not found.', 'danger')
             return redirect(url_for('share_tokens'))
         
         if current_user.tokens < amount:
-            flash('Poor! Not enough Habiba Points!', 'danger')
+            flash('Not enough tokens!', 'danger')
             return redirect(url_for('share_tokens'))
 
         current_user.tokens -= amount
@@ -180,9 +181,24 @@ def share_tokens():
             timestamp=datetime.utcnow()
         )
         db.session.add(transaction)
+
+        # Create notification
+        notification = Notification(
+            recipient_id=recipient.id,
+            sender_id=current_user.id,
+            amount=amount
+        )
+        db.session.add(notification)
         db.session.commit()
         
-        flash('Habibas successfully shared.', 'success')
+        # Emit real-time notification
+        socketio.emit('new_notification', {
+            'recipient_id': recipient.id,
+            'sender': current_user.pseudo,
+            'amount': amount
+        })
+
+        flash('Tokens successfully shared.', 'success')
         return redirect(url_for('share_tokens'))
     
     return render_template('share_tokens.html')
@@ -322,3 +338,15 @@ def view_profile(user_id):
     statuses = Status.query.filter_by(user_id=user.id).order_by(Status.timestamp.desc()).all()
     return render_template('view_profile.html', user=user, statuses=statuses)
 
+@app.route('/notifications')
+@login_required
+def notifications():
+    notifications = Notification.query.filter_by(recipient_id=current_user.id, read=False).all()
+    for notification in notifications:
+        notification.read = True
+    db.session.commit()
+    return jsonify([{
+        'sender': notification.sender.pseudo,
+        'amount': notification.amount,
+        'timestamp': notification.timestamp
+    } for notification in notifications])

@@ -76,3 +76,14 @@ class LikeDislike(db.Model):
     status_id = db.Column(db.Integer, db.ForeignKey('status.id'), nullable=False)
     is_like = db.Column(db.Boolean, nullable=False)
     db.UniqueConstraint('user_id', 'status_id', name='user_status_uc')
+
+class Notification(db.Model):
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    recipient_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
+    sender_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
+    amount = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    read = db.Column(db.Boolean, default=False)
+
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_notifications')
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_notifications')

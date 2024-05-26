@@ -103,6 +103,27 @@
             }
         };
     </script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const socket = io();
+
+            socket.on('new_notification', function(data) {
+                if (data.recipient_id === '{{ current_user.id }}') {
+                    alert(`You received ${data.amount} tokens from ${data.sender}`);
+                }
+            });
+
+            // Fetch offline notifications
+            fetch('/notifications')
+                .then(response => response.json())
+                .then(notifications => {
+                    notifications.forEach(notification => {
+                        alert(`You received ${notification.amount} tokens from ${notification.sender} at ${notification.timestamp}`);
+                    });
+                });
+        });
+    </script>
 </head>
 <body onload="displayDateTime()" class="{% if session.get('dark_mode') %}dark-mode{% endif %}">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
