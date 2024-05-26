@@ -71,9 +71,8 @@ class Status(db.Model):
     dislikes = db.Column(db.Integer, default=0)
 
 class LikeDislike(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)  # Ensure user.id is UUID
     status_id = db.Column(db.Integer, db.ForeignKey('status.id'), nullable=False)
-    is_like = db.Column(db.Boolean, nullable=False)  # True for like, False for dislike
-
+    is_like = db.Column(db.Boolean, nullable=False)
     db.UniqueConstraint('user_id', 'status_id', name='user_status_uc')
