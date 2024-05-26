@@ -136,7 +136,7 @@ def share_tokens():
         current_user.tokens -= amount
         recipient.tokens += amount
         
-        transaction = Transaction(
+        transaction = TokenTransaction(
             sender_id=current_user.id,
             recipient_id=recipient.id,
             amount=amount
