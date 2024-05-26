@@ -20,7 +20,7 @@ document.getElementById('search-bar').addEventListener('input', function() {
                 suggestions.innerHTML = '';
                 data.forEach(user => {
                     const li = document.createElement('li');
-                    li.innerHTML = `<span>${user.pseudo}</span> - <span>${user.token_count}</span> <img src="{{ url_for('static', filename='icons/gold_coin.png') }}" alt="Tokens" class="token-icon">`;
+                    li.innerHTML = `<span>${user.pseudo}</span> - <span>${user.tokens}</span> <i class="fas fa-coins" style="color: gold;"></i>`;
                     li.dataset.userId = user.id;
                     li.addEventListener('click', () => {
                         window.location.href = `/profile/${user.id}`;
