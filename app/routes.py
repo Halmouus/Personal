@@ -107,13 +107,9 @@ def profile():
         if profile_picture:
             filename = secure_filename(profile_picture.filename)
             profile_picture_dir = os.path.join('static', 'profile_pics')
-            if not os.path.exists(profile_picture_dir):
-                os.makedirs(profile_picture_dir)
             profile_picture_path = os.path.join(profile_picture_dir, filename)
-            app.logger.info(f"Saving profile picture to {profile_picture_path}")
             profile_picture.save(profile_picture_path)
             current_user.profile_picture = 'profile_pics/' + filename
-            app.logger.info(f"Profile picture saved as {current_user.profile_picture}")
         
         db.session.commit()
         flash('Your profile has been updated!', 'success')
