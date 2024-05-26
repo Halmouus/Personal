@@ -59,6 +59,14 @@
         .slider.round:before {
             border-radius: 50%;
         }
+        .token-display {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .token-display i {
+            margin-right: 5px;
+        }
     </style>
     <script>
         function displayDateTime() {
@@ -113,9 +121,9 @@
             </ul>
             <div class="ml-auto">
                 {% if current_user.is_authenticated %}
-                <span class="nav-link">
+                <div class="token-display">
                     <i class="fas fa-coins" style="color: gold;"></i> {{ current_user.tokens }}
-                </span>
+                </div>
                 {% endif %}
                 <label class="switch">
                     <input type="checkbox" id="darkModeToggle" {% if session.get('dark_mode') %}checked{% endif %} onclick="toggleDarkMode()">
