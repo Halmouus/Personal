@@ -235,3 +235,26 @@ def dislike_status(status_id):
     db.session.commit()
     return jsonify({'likes': status.likes, 'dislikes': status.dislikes})
 
+
+@app.route('/search', methods=['GET'])
+@login_required
+def search():
+    query = request.args.get('query', '')
+    if query:
+        users = User.query.filter(User.pseudo.like(f'{query}%')).all()
+        results = [
+            {
+                'id': user.id,
+                'pseudo': user.pseudo,
+                'tokens': user.tokens  # Assuming you have a field for token count
+            }
+            for user in users
+        ]
+        return jsonify(results)
+    return jsonify([])
+
+
+@app.route('/network')
+@login_required
+def network():
+    return render_template('network.html')

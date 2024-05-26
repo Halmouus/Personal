@@ -1,0 +1,37 @@
+<!-- templates/network.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Habiba Network</h1>
+    <div class="search-container">
+        <input type="text" id="search-bar" placeholder="Search users...">
+        <ul id="suggestions" class="suggestions-list"></ul>
+    </div>
+</div>
+
+<script>
+document.getElementById('search-bar').addEventListener('input', function() {
+    const query = this.value;
+    if (query.length > 0) {
+        fetch(`/search?query=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                const suggestions = document.getElementById('suggestions');
+                suggestions.innerHTML = '';
+                data.forEach(user => {
+                    const li = document.createElement('li');
+                    li.textContent = `${user.pseudo} - ${user.token_count} tokens`;
+                    li.dataset.userId = user.id;
+                    li.addEventListener('click', () => {
+                        window.location.href = `/profile/${user.id}`;
+                    });
+                    suggestions.appendChild(li);
+                });
+            });
+    } else {
+        document.getElementById('suggestions').innerHTML = '';
+    }
+});
+</script>
+{% endblock %}
