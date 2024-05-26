@@ -63,5 +63,3 @@ class Status(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     likes = db.Column(db.Integer, default=0)
     dislikes = db.Column(db.Integer, default=0)
-
-    user = db.relationship('User', backref='statuses')
