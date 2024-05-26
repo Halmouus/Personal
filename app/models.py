@@ -23,6 +23,12 @@ class User(UserMixin, db.Model):
     
     def __repr__(self):
         return f'<User {self.username!r}>'
+    
+    def has_liked(self, status):
+        return LikeDislike.query.filter_by(user_id=self.id, status_id=status.id, is_like=True).count() > 0
+
+    def has_disliked(self, status):
+        return LikeDislike.query.filter_by(user_id=self.id, status_id=status.id, is_like=False).count() > 0
 
 @login.user_loader
 def load_user(user_id):
@@ -63,3 +69,11 @@ class Status(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     likes = db.Column(db.Integer, default=0)
     dislikes = db.Column(db.Integer, default=0)
+
+class LikeDislike(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status_id = db.Column(db.Integer, db.ForeignKey('status.id'), nullable=False)
+    is_like = db.Column(db.Boolean, nullable=False)  # True for like, False for dislike
+
+    db.UniqueConstraint('user_id', 'status_id', name='user_status_uc')

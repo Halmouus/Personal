@@ -1,11 +1,10 @@
-<!-- view_profile.html -->
 {% extends "base.html" %}
 
 {% block content %}
 <h1>{{ user.pseudo }}'s Profile</h1>
 {% if user.profile_picture %}
     <div class="mt-4">
-        <img src="{{ url_for('static', filename='profile_pics/' + user.profile_picture) }}" alt="Profile Picture" class="profile-pic">
+        <img src="{{ url_for('static', filename='profile_pics/' ~ user.profile_picture) }}" alt="Profile Picture" class="profile-pic">
     </div>
 {% else %}
     <div class="mt-4">
@@ -13,11 +12,73 @@
     </div>
 {% endif %}
 <h2>Statuses</h2>
-<ul>
+<div class="status-container">
     {% for status in statuses %}
-        <li>{{ status.text }} - <small>{{ status.timestamp }}</small></li>
+    <div class="status-box" id="status-{{ status.id }}">
+        <p>{{ status.text }}</p>
+        <small>{{ status.timestamp }}</small>
+        <div>
+            <button class="btn btn-link like-btn" data-id="{{ status.id }}">👍 {{ status.likes }}</button>
+            <button class="btn btn-link dislike-btn" data-id="{{ status.id }}">👎 {{ status.dislikes }}</button>
+        </div>
+    </div>
     {% endfor %}
-</ul>
+</div>
+
+<style>
+.profile-pic {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 50%;
+}
+.status-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.status-box {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.like-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var statusId = this.getAttribute('data-id');
+            fetch('/like/' + statusId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('#status-' + statusId + ' .like-btn').innerHTML = '👍 ' + data.likes;
+                document.querySelector('#status-' + statusId + ' .dislike-btn').innerHTML = '👎 ' + data.dislikes;
+            });
+        });
+    });
+
+    document.querySelectorAll('.dislike-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var statusId = this.getAttribute('data-id');
+            fetch('/dislike/' + statusId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('#status-' + statusId + ' .like-btn').innerHTML = '👍 ' + data.likes;
+                document.querySelector('#status-' + statusId + ' .dislike-btn').innerHTML = '👎 ' + data.dislikes;
+            });
+        });
+    });
+});
+</script>
 {% endblock %}
-
-

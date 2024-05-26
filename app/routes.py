@@ -4,7 +4,7 @@ from flask import render_template, request, redirect, url_for, flash, jsonify, s
 from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
 from . import app, db
 from datetime import datetime
-from .models import User, LoginSession, Token, TokenTransaction, Status
+from .models import User, LoginSession, Token, TokenTransaction, Status, LikeDislike
 
 @app.route('/')
 def home():
@@ -220,7 +220,7 @@ def leaderboard():
 
 @app.route('/like_status/<int:status_id>', methods=['POST'])
 @login_required
-def like_status(status_id):
+def increment_like_status(status_id):
     status = Status.query.get_or_404(status_id)
     status.likes += 1
     db.session.commit()
@@ -229,11 +229,57 @@ def like_status(status_id):
 
 @app.route('/dislike_status/<int:status_id>', methods=['POST'])
 @login_required
-def dislike_status(status_id):
+def increment_dislike_status(status_id):
     status = Status.query.get_or_404(status_id)
     status.dislikes += 1
     db.session.commit()
     return jsonify({'likes': status.likes, 'dislikes': status.dislikes})
+
+
+@app.route('/like/<int:status_id>', methods=['POST'])
+@login_required
+def like_status(status_id):
+    status = Status.query.get_or_404(status_id)
+    existing_like = LikeDislike.query.filter_by(user_id=current_user.id, status_id=status_id).first()
+
+    if existing_like:
+        if existing_like.is_like:
+            db.session.delete(existing_like)
+        else:
+            existing_like.is_like = True
+    else:
+        new_like = LikeDislike(user_id=current_user.id, status_id=status_id, is_like=True)
+        db.session.add(new_like)
+
+    db.session.commit()
+
+    likes_count = LikeDislike.query.filter_by(status_id=status_id, is_like=True).count()
+    dislikes_count = LikeDislike.query.filter_by(status_id=status_id, is_like=False).count()
+
+    return jsonify({"likes": likes_count, "dislikes": dislikes_count})
+
+
+@app.route('/dislike/<int:status_id>', methods=['POST'])
+@login_required
+def dislike_status(status_id):
+    status = Status.query.get_or_404(status_id)
+    existing_dislike = LikeDislike.query.filter_by(user_id=current_user.id, status_id=status_id).first()
+
+    if existing_dislike:
+        if not existing_dislike.is_like:
+            db.session.delete(existing_dislike)
+        else:
+            existing_dislike.is_like = False
+    else:
+        new_dislike = LikeDislike(user_id=current_user.id, status_id=status_id, is_like=False)
+        db.session.add(new_dislike)
+
+    db.session.commit()
+
+    likes_count = LikeDislike.query.filter_by(status_id=status_id, is_like=True).count()
+    dislikes_count = LikeDislike.query.filter_by(status_id=status_id, is_like=False).count()
+
+    return jsonify({"likes": likes_count, "dislikes": dislikes_count})
 
 
 @app.route('/search', methods=['GET'])
