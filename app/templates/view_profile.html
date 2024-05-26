@@ -2,20 +2,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ user.pseudo }}'s Profile</h1>
-    {% if user.profile_picture %}
+<h1>{{ user.pseudo }}'s Profile</h1>
+{% if user.profile_picture %}
     <div class="mt-4">
         <img src="{{ url_for('static', filename='profile_pics/' + user.profile_picture) }}" alt="Profile Picture" class="profile-pic">
     </div>
-    {% else %}
+{% else %}
     <div class="mt-4">
         <img src="{{ url_for('static', filename='profile_pics/default.png') }}" alt="Default Profile Picture" class="profile-pic">
     </div>
-    {% endif %}
-    <h2>Statuses</h2>
-    <ul>
+{% endif %}
+<h2>Statuses</h2>
+<ul>
     {% for status in statuses %}
         <li>{{ status.text }} - <small>{{ status.timestamp }}</small></li>
     {% endfor %}
-    </ul>
+</ul>
 {% endblock %}
+
