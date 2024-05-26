@@ -25,9 +25,13 @@
     <!-- Profile Picture Display -->
     {% if current_user.profile_picture %}
     <div class="mt-4">
-        <img src="{{ url_for('static', filename='profile_pics/' ~ current_user.profile_picture) }}" alt="Profile Picture" class="profile-pic">
+        <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_picture) }}" alt="Profile Picture" class="profile-pic">
     </div>
-    {% endif %}
+    {% else %}
+    <div class="mt-4">
+        <img src="{{ url_for('static', filename='profile_pics/default.png') }}" alt="Default Profile Picture" class="profile-pic">
+    </div>
+    {% endif %}    
     
     <h3 class="mt-4">Statuses</h3>
     {% for status in statuses %}
