@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, jsonify, s
 from flask_login import current_user, login_user as flask_login_user, logout_user as flask_logout_user, login_required
 from . import app, db
 from datetime import datetime
-from .models import User, LoginSession, Token
+from .models import User, LoginSession, Token, TokenTransaction
 
 @app.route('/')
 def home():
@@ -101,3 +101,31 @@ def toggle_dark_mode():
     dark_mode = data.get('dark_mode', False)
     session['dark_mode'] = dark_mode
     return jsonify(success=True)
+
+@app.route('/share-tokens', methods=['GET', 'POST'])
+@login_required
+def share_tokens():
+    if request.method == 'POST':
+        recipient_username = request.form['recipient']
+        tokens = int(request.form['tokens'])
+
+        recipient = User.query.filter_by(username=recipient_username).first()
+        if not recipient:
+            flash('Recipient not found', 'danger')
+            return redirect(url_for('share_tokens'))
+
+        if current_user.tokens < tokens:
+            flash('Insufficient tokens', 'danger')
+            return redirect(url_for('share_tokens'))
+
+        current_user.tokens -= tokens
+        recipient.tokens += tokens
+
+        transaction = TokenTransaction(sender_id=current_user.id, recipient_id=recipient.id, tokens=tokens)
+        db.session.add(transaction)
+        db.session.commit()
+
+        flash(f'Successfully shared {tokens} tokens with {recipient.username}', 'success')
+        return redirect(url_for('dashboard'))
+
+    return render_template('share_tokens.html')
