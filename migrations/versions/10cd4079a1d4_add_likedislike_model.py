@@ -21,7 +21,7 @@ def upgrade():
     op.create_table('like_dislike',
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('user_id', sa.String(length=36), nullable=False),
-    sa.Column('status_id', sa.String(length=36), nullable=False),
+    sa.Column('status_id', sa.Integer(), nullable=False),  # Correct data type here
     sa.Column('is_like', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['status_id'], ['status.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
