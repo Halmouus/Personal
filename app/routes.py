@@ -102,33 +102,53 @@ def toggle_dark_mode():
     session['dark_mode'] = dark_mode
     return jsonify(success=True)
 
-@app.route('/share-tokens', methods=['GET', 'POST'])
+
+@app.route('/share-tokens', methods=['GET', 'POST'], endpoint='share_tokens')
 @login_required
 def share_tokens():
     if request.method == 'POST':
-        recipient_username = request.form['recipient']
-        tokens = int(request.form['tokens'])
+        recipient_username = request.form.get('recipient')
+        amount = request.form.get('amount')
+        
+        if not recipient_username or not amount:
+            flash('Recipient and amount are required.', 'danger')
+            return redirect(url_for('share_tokens'))
+        
+        try:
+            amount = int(amount)
+        except ValueError:
+            flash('Amount must be an integer.', 'danger')
+            return redirect(url_for('share_tokens'))
+
+        if amount <= 0:
+            flash('Amount must be greater than zero.', 'danger')
+            return redirect(url_for('share_tokens'))
 
         recipient = User.query.filter_by(username=recipient_username).first()
         if not recipient:
-            flash('Habiba not found, you are a Zameul!', 'danger')
+            flash('Recipient not found.', 'danger')
+            return redirect(url_for('share_tokens'))
+        
+        if current_user.tokens < amount:
+            flash('You do not have enough tokens.', 'danger')
             return redirect(url_for('share_tokens'))
 
-        if current_user.tokens < tokens:
-            flash('Too much you cannot handle!', 'danger')
-            return redirect(url_for('share_tokens'))
-
-        current_user.tokens -= tokens
-        recipient.tokens += tokens
-
-        transaction = TokenTransaction(sender_id=current_user.id, recipient_id=recipient.id, tokens=tokens)
+        current_user.tokens -= amount
+        recipient.tokens += amount
+        
+        transaction = Transaction(
+            sender_id=current_user.id,
+            recipient_id=recipient.id,
+            amount=amount
+        )
         db.session.add(transaction)
         db.session.commit()
-
-        flash(f'Successfully given {tokens} habibas to {recipient.username}', 'success')
-        return redirect(url_for('dashboard'))
-
+        
+        flash('Tokens successfully shared.', 'success')
+        return redirect(url_for('share_tokens'))
+    
     return render_template('share_tokens.html')
+
 
 @app.route('/transaction-history', methods=['GET'])
 @login_required

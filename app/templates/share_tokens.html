@@ -8,15 +8,18 @@
     <form method="POST" action="{{ url_for('share_tokens') }}">
         <div class="form-group">
             <label for="recipient">Recipient Username:</label>
-            <input type="text" id="recipient" name="recipient" class="form-control" autocomplete="off">
+            <input type="text" id="recipient" name="recipient" class="form-control" autocomplete="off" required>
             <datalist id="usernames"></datalist>
         </div>
         <div class="form-group">
             <label for="amount">Amount of Tokens:</label>
-            <input type="number" id="amount" name="amount" class="form-control">
+            <input type="number" id="amount" name="amount" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-primary">Share Tokens</button>
     </form>
+    {% if error %}
+        <div class="alert alert-danger mt-3">{{ error }}</div>
+    {% endif %}
 </div>
 
 <script>
