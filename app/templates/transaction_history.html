@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction History{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Transaction History</h1>
+    <h2>Sent Transactions</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Recipient</th>
+                <th>Tokens</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in sent_transactions %}
+            <tr>
+                <td>{{ transaction.recipient.username }}</td>
+                <td>{{ transaction.tokens }}</td>
+                <td>{{ transaction.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Received Transactions</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sender</th>
+                <th>Tokens</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in received_transactions %}
+            <tr>
+                <td>{{ transaction.sender.username }}</td>
+                <td>{{ transaction.tokens }}</td>
+                <td>{{ transaction.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -111,11 +111,11 @@ def share_tokens():
 
         recipient = User.query.filter_by(username=recipient_username).first()
         if not recipient:
-            flash('Recipient not found', 'danger')
+            flash('Habiba not found, you are a Zameul!', 'danger')
             return redirect(url_for('share_tokens'))
 
         if current_user.tokens < tokens:
-            flash('Insufficient tokens', 'danger')
+            flash('Too much you cannot handle!', 'danger')
             return redirect(url_for('share_tokens'))
 
         current_user.tokens -= tokens
@@ -125,7 +125,15 @@ def share_tokens():
         db.session.add(transaction)
         db.session.commit()
 
-        flash(f'Successfully shared {tokens} tokens with {recipient.username}', 'success')
+        flash(f'Successfully given {tokens} habibas to {recipient.username}', 'success')
         return redirect(url_for('dashboard'))
 
     return render_template('share_tokens.html')
+
+@app.route('/transaction-history', methods=['GET'])
+@login_required
+def transaction_history():
+    sent_transactions = TokenTransaction.query.filter_by(sender_id=current_user.id).all()
+    received_transactions = TokenTransaction.query.filter_by(recipient_id=current_user.id).all()
+    
+    return render_template('transaction_history.html', sent_transactions=sent_transactions, received_transactions=received_transactions)
