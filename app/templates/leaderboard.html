@@ -12,7 +12,7 @@
     </thead>
     <tbody>
         {% for user in users %}
-            <tr class="{% if user.id == current_user.id %}table-warning{% endif %}">
+            <tr class="{% if user.id == current_user.id %}table-warning{% endif %} user-item" data-id="{{ user.id }}">
                 <th scope="row">
                     {% if user.id == current_user.id %}
                         <i class="fas fa-star" style="color: gold;"></i> {{ loop.index }}
@@ -20,12 +20,59 @@
                         {{ loop.index }}
                     {% endif %}
                 </th>
-                <td>{{ user.pseudo }}</td>
+                <td>
+                    <a href="{{ url_for('view_profile', user_id=user.id) }}" class="pseudo-link">
+                        {{ user.pseudo }}
+                    </a>
+                    <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_picture or 'default.png')) }}" class="miniature" alt="Profile Picture of {{ user.pseudo }}">
+                </td>
                 <td><i class="fas fa-coins" style="color: gold;"></i> {{ user.tokens }}</td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<style>
+.user-item {
+    position: relative;
+}
+
+.miniature {
+    display: none;
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+}
+
+.user-item:hover .miniature {
+    display: block;
+}
+
+.pseudo-link {
+    text-decoration: none;
+    color: black;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.pseudo-link').forEach(function(link) {
+        link.addEventListener('mouseover', function() {
+            const userId = link.closest('.user-item').dataset.id;
+            const miniature = link.closest('.user-item').querySelector('.miniature');
+            miniature.style.display = 'block';
+        });
+
+        link.addEventListener('mouseout', function() {
+            const miniature = link.closest('.user-item').querySelector('.miniature');
+            miniature.style.display = 'none';
+        });
+    });
+});
+</script>
 {% endblock %}
-
-
