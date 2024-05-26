@@ -52,7 +52,7 @@ def login_user():
         db.session.add(session)
 
         # Issue a token to the user
-        user.tokens += 1
+        user.tokens += 10
         token = Token(user_id=user.id, token_value=1)
         db.session.add(token)
 

@@ -41,4 +41,14 @@ class Token(db.Model):
 
     def __repr__(self):
         return f"<Token {self.token_value} for User {self.user_id}>"
+    
+class TokenTransaction(db.Model):
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    sender_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
+    recipient_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
+    tokens = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_transactions')
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_transactions')
 
