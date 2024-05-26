@@ -24,3 +24,4 @@ typing-extensions==4.11.0
 werkzeug==3.0.3
 wtforms==3.1.2
 zipp==3.18.1
+whitenoise==6.6.0
