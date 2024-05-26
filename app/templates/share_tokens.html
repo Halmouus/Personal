@@ -7,15 +7,15 @@
     <h1>Share Tokens</h1>
     <form method="POST" action="{{ url_for('share_tokens') }}">
         <div class="form-group">
-            <label for="recipient">Recipient Username:</label>
+            <label for="recipient">A Habiba You want to give love to:</label>
             <input type="text" id="recipient" name="recipient" class="form-control" autocomplete="off" required list="usernames">
             <datalist id="usernames"></datalist>
         </div>
         <div class="form-group">
-            <label for="amount">Amount of Tokens:</label>
+            <label for="amount">Habiba Points:</label>
             <input type="number" id="amount" name="amount" class="form-control" required>
         </div>
-        <button type="submit" class="btn btn-primary">Share Tokens</button>
+        <button type="submit" class="btn btn-primary">Share Love</button>
     </form>
     {% if error %}
         <div class="alert alert-danger mt-3">{{ error }}</div>

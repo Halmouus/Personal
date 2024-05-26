@@ -17,7 +17,7 @@
         <tbody>
             {% for transaction in sent_transactions %}
             <tr>
-                <td>{{ transaction.recipient.username }}</td>
+                <td>{{ transaction.recipient.pseudo }}</td>
                 <td>{{ transaction.tokens }}</td>
                 <td>{{ transaction.timestamp }}</td>
             </tr>
@@ -37,7 +37,7 @@
         <tbody>
             {% for transaction in received_transactions %}
             <tr>
-                <td>{{ transaction.sender.username }}</td>
+                <td>{{ transaction.sender.pseudo }}</td>
                 <td>{{ transaction.tokens }}</td>
                 <td>{{ transaction.timestamp }}</td>
             </tr>

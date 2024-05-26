@@ -12,20 +12,27 @@ def home():
 def register_user():
     if request.method == 'POST':
         username = request.form['username']
+        pseudo = request.form['pseudo']
         password = request.form['password']
 
         user_exists = User.query.filter_by(username=username).first()
+        pseudo_exists = User.query.filter_by(pseudo=pseudo).first()
+        
         if user_exists:
-            flash('Username already exists', 'danger')
+            flash('Bad Habiba! Username already exists', 'danger')
+            return redirect(url_for('register'))
+        
+        if pseudo_exists:
+            flash('This Habiba is already taken mate!', 'danger')
             return redirect(url_for('register'))
 
-        user = User(username=username)
+        user = User(username=username, pseudo=pseudo)
         user.set_password(password)
 
         db.session.add(user)
         db.session.commit()
 
-        flash('You are now registered and can log in', 'success')
+        flash('You are a registered Habiba and can log in now!', 'success')
         return redirect(url_for('login'))
 
     return render_template('register.html')
@@ -80,19 +87,18 @@ def dashboard_user():
 @login_required
 def profile():
     if request.method == 'POST':
-        username = request.form['username']
+        pseudo = request.form['pseudo']
         
-        user_exists = User.query.filter_by(username=username).first()
-        if user_exists and user_exists.id != current_user.id:
-            flash('Username already exists', 'danger')
+        pseudo_exists = User.query.filter(User.pseudo == pseudo, User.id != current_user.id).first()
+        if pseudo_exists:
+            flash('Too bad! Habiba already taken', 'danger')
             return redirect(url_for('profile'))
-
-        current_user.username = username
+        
+        current_user.pseudo = pseudo
         db.session.commit()
-        flash('Your profile has been updated', 'success')
+        flash('Your Habiba has fresh new name!', 'success')
         return redirect(url_for('profile'))
-    
-    return render_template('profile.html')
+    return render_template('profile.html', title='Profile')
 
 @app.route('/toggle-dark-mode', methods=['POST'])
 @login_required
@@ -171,8 +177,8 @@ def autocomplete_usernames():
     if not query:
         return jsonify([])
 
-    users = User.query.filter(User.username.ilike(f'{query}%'), User.id != current_user.id).all()
-    usernames = [user.username for user in users]
+    users = User.query.filter(User.pseudo.ilike(f'{query}%'), User.id != current_user.id).all()
+    usernames = [user.pseudo for user in users]
 
     return jsonify(usernames)
 

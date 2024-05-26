@@ -6,7 +6,7 @@
     <thead>
         <tr>
             <th scope="col">Rank</th>
-            <th scope="col">Username</th>
+            <th scope="col">Pseudo</th>
             <th scope="col">Tokens</th>
         </tr>
     </thead>
@@ -20,7 +20,7 @@
                         {{ loop.index }}
                     {% endif %}
                 </th>
-                <td>{{ user.username }}</td>
+                <td>{{ user.pseudo }}</td>
                 <td><i class="fas fa-coins" style="color: gold;"></i> {{ user.tokens }}</td>
             </tr>
         {% endfor %}
