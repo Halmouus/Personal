@@ -143,7 +143,8 @@ def share_tokens():
         transaction = TokenTransaction(
             sender_id=current_user.id,
             recipient_id=recipient.id,
-            amount=amount
+            tokens=amount
+            timestamp=datetime.utcnow()
         )
         db.session.add(transaction)
         db.session.commit()
