@@ -4,18 +4,35 @@
 
 {% block content %}
 <div class="container">
-    <h1>Give your Habibas to some Habibas!</h1>
-    <p>You have {{ current_user.tokens }} habiba points.</p> 
-    <form method="POST">
+    <h1>Share Tokens</h1>
+    <form method="POST" action="{{ url_for('share_tokens') }}">
         <div class="form-group">
-            <label for="recipient">Your  Habiba</label>
-            <input type="text" class="form-control" id="recipient" name="recipient" required>
+            <label for="recipient">Recipient Username:</label>
+            <input type="text" id="recipient" name="recipient" class="form-control" autocomplete="off">
+            <datalist id="usernames"></datalist>
         </div>
         <div class="form-group">
-            <label for="tokens">Habiba Points to Share</label>
-            <input type="number" class="form-control" id="tokens" name="tokens" required>
+            <label for="amount">Amount of Tokens:</label>
+            <input type="number" id="amount" name="amount" class="form-control">
         </div>
-        <button type="submit" class="btn btn-primary">Give Habiba</button>
+        <button type="submit" class="btn btn-primary">Share Tokens</button>
     </form>
 </div>
+
+<script>
+    document.getElementById('recipient').addEventListener('input', function() {
+        var query = this.value;
+        fetch('/autocomplete_usernames?query=' + query)
+            .then(response => response.json())
+            .then(data => {
+                var datalist = document.getElementById('usernames');
+                datalist.innerHTML = '';
+                data.forEach(function(username) {
+                    var option = document.createElement('option');
+                    option.value = username;
+                    datalist.appendChild(option);
+                });
+            });
+    });
+</script>
 {% endblock %}

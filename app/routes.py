@@ -137,3 +137,11 @@ def transaction_history():
     received_transactions = TokenTransaction.query.filter_by(recipient_id=current_user.id).all()
     
     return render_template('transaction_history.html', sent_transactions=sent_transactions, received_transactions=received_transactions)
+
+@app.route('/autocomplete_usernames')
+@login_required
+def autocomplete_usernames():
+    query = request.args.get('query', '')
+    users = User.query.filter(User.username.ilike(f'%{query}%')).all()
+    usernames = [user.username for user in users]
+    return jsonify(usernames)
