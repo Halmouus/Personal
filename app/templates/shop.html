@@ -28,7 +28,7 @@
                                                 <h5 class="card-title">{{ item.name }}</h5>
                                                 <p class="card-text">{{ item.description }}</p>
                                                 <p class="card-text"><i class="fas fa-coins" style="color: gold;"></i> {{ item.price }}</p>
-                                                <form method="post" action="{{ url_for('buy_item', item_id=item.id) }}">
+                                                <form method="post" action="{{ url_for('purchase_item', item_id=item.id) }}">
                                                     <button type="submit" class="btn btn-primary">Buy</button>
                                                 </form>
                                             </div>
