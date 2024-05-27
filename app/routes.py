@@ -5,7 +5,7 @@ from flask_login import current_user, login_user as flask_login_user, logout_use
 from . import socketio
 from . import app, db
 from datetime import datetime
-from .models import User, LoginSession, Token, TokenTransaction, Status, LikeDislike, Notification
+from .models import User, LoginSession, Token, TokenTransaction, Status, LikeDislike, Notification, Category, UserItem, Item
 
 @app.route('/')
 def home():
@@ -356,3 +356,33 @@ def notifications():
         'amount': notification.amount,
         'timestamp': notification.timestamp
     } for notification in notifications])
+
+@app.route('/shop')
+@login_required
+def shop():
+    categories = Category.query.all()
+    items = Item.query.all()
+    return render_template('shop.html', categories=categories, items=items)
+
+@app.route('/shop/item/<string:item_id>')
+@login_required
+def item_detail(item_id):
+    item = Item.query.get_or_404(item_id)
+    return render_template('item_detail.html', item=item)
+
+@app.route('/shop/purchase/<string:item_id>', methods=['POST'])
+@login_required
+def purchase_item(item_id):
+    item = Item.query.get_or_404(item_id)
+    if current_user.tokens < item.price:
+        flash('Not enough tokens!', 'danger')
+        return redirect(url_for('shop'))
+    
+    current_user.tokens -= item.price
+    user_item = UserItem(user_id=current_user.id, item_id=item.id)
+    db.session.add(user_item)
+    db.session.commit()
+    
+    flash('Item purchased successfully!', 'success')
+    return redirect(url_for('shop'))
+

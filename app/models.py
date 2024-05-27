@@ -87,3 +87,24 @@ class Notification(db.Model):
 
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_notifications')
     sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_notifications')
+
+class Category(db.Model):
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = db.Column(db.String(50), nullable=False)
+
+class Item(db.Model):
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = db.Column(db.String(100), nullable=False)
+    category_id = db.Column(db.String(36), db.ForeignKey('category.id'), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    image_url = db.Column(db.String(255), nullable=True)
+
+    category = db.relationship('Category', backref=db.backref('items', lazy=True))
+
+class UserItem(db.Model):
+    user_id = db.Column(db.String(36), db.ForeignKey('user.id'), primary_key=True)
+    item_id = db.Column(db.String(36), db.ForeignKey('item.id'), primary_key=True)
+
+    user = db.relationship('User', backref=db.backref('user_items', lazy=True))
+    item = db.relationship('Item', backref=db.backref('user_items', lazy=True))
