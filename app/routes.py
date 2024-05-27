@@ -374,8 +374,13 @@ def item_detail(item_id):
 @login_required
 def purchase_item(item_id):
     item = Item.query.get_or_404(item_id)
+
+    if current_user.items.filter(UserItem.item_id == item.id).first():
+        flash('You already own this item, Habiba!', 'danger')
+        return redirect(url_for('item_detail', item_id=item_id))
+    
     if current_user.tokens < item.price:
-        flash('Not enough tokens!', 'danger')
+        flash('Soory, cannot afford it, because you are poor! Got get some Habibas!', 'danger')
         return redirect(url_for('shop'))
     
     current_user.tokens -= item.price
