@@ -17,19 +17,24 @@ def register_user():
         username = request.form['username']
         pseudo = request.form['pseudo']
         password = request.form['password']
+        profile_picture = request.form['profile_picture']
 
         user_exists = User.query.filter_by(username=username).first()
         pseudo_exists = User.query.filter_by(pseudo=pseudo).first()
-        
+
         if user_exists:
             flash('Bad Habiba! Username already exists', 'danger')
             return redirect(url_for('register'))
-        
+
         if pseudo_exists:
             flash('This Habiba is already taken mate!', 'danger')
             return redirect(url_for('register'))
 
-        user = User(username=username, pseudo=pseudo)
+        if not profile_picture:
+            flash('Profile picture selection is required.', 'danger')
+            return redirect(url_for('register'))
+
+        user = User(username=username, pseudo=pseudo, profile_picture=profile_picture)
         user.set_password(password)
 
         db.session.add(user)
@@ -39,6 +44,7 @@ def register_user():
         return redirect(url_for('login'))
 
     return render_template('register.html')
+
 
 @app.route('/login', methods=['GET', 'POST'], endpoint='login')
 def login_user():
