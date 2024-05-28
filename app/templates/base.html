@@ -72,6 +72,32 @@
         .table-warning {
             background-color: #ffebcc;
         }
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #f8f9fa; /* Change as per your theme */
+            box-shadow: 0 4px 6px -6px #222;
+            transition: top 0.3s;
+        }
+        .page-enter {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        .page-enter-active {
+            opacity: 1;
+            transform: translateX(0);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .page-exit {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .page-exit-active {
+            opacity: 0;
+            transform: translateX(-100%);
+            transition: opacity 0.5s, transform 0.5s;
+        }
     </style>
     <script>
         function displayDateTime() {
@@ -122,6 +148,29 @@
                         alert(`You received ${notification.amount} tokens from ${notification.sender} at ${notification.timestamp}`);
                     });
                 });
+
+            const links = document.querySelectorAll('nav a');
+            links.forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const target = event.target.getAttribute('href');
+                    const currentPage = document.querySelector('.page');
+                    currentPage.classList.add('page-exit-active');
+
+                    setTimeout(() => {
+                        window.location.href = target;
+                    }, 500);
+                });
+            });
+
+            window.addEventListener('load', function () {
+                const newPage = document.querySelector('.page');
+                newPage.classList.add('page-enter');
+                setTimeout(() => {
+                    newPage.classList.remove('page-enter');
+                    newPage.classList.add('page-enter-active');
+                }, 0);
+            });
         });
     </script>
 </head>
@@ -170,7 +219,9 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        {% block content %}{% endblock %}
+        <div class="page">
+            {% block content %}{% endblock %}
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
