@@ -107,17 +107,26 @@ input:checked + .slider:before {
     transition: opacity 0.5s, transform 0.5s;
 }
 
+/* Dropdown menu styles */
 .dropdown-menu {
     display: none;
     position: absolute;
+    background-color: #f8f9fa;  
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    padding: 10px 0;  
     z-index: 1000;
 }
 
-.nav-item:hover .dropdown-menu {
-    display: block;
-    animation: slideDown 0.3s ease-out forwards;
+.body.dark-mode .dropdown-menu {
+    background-color: #333;
 }
 
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block; 
+}
+
+/* Keyframes for sliding down animation */
 @keyframes slideDown {
     from {
         opacity: 0;
@@ -127,4 +136,8 @@ input:checked + .slider:before {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.dropdown-menu {
+    animation: slideDown 0.3s ease-out forwards;
 }

@@ -64,7 +64,35 @@ document.addEventListener('DOMContentLoaded', function() {
         newPage.classList.add('page-enter');
         setTimeout(() => {
             newPage.classList.remove('page-enter');
-            newPage.classList add('page-enter-active');
+            newPage.classList.add('page-enter-active');
         }, 0);
+    });
+
+    // Dropdown toggle functionality
+    const dropdownToggles = document.querySelectorAll('.nav-item.dropdown');
+
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent click event from bubbling up to document
+            const menu = this.querySelector('.dropdown-menu');
+            const isVisible = window.getComputedStyle(menu).display !== 'none';
+
+            // Close all open menus first
+            document.querySelectorAll('.dropdown-menu').forEach(dm => {
+                dm.style.display = 'none';
+            });
+
+            // Toggle this menu's visibility
+            menu.style.display = isVisible ? 'none' : 'block';
+        });
+    });
+
+    // Clicking outside of the dropdown will close it
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.nav-item.dropdown')) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.style.display = 'none';
+            });
+        }
     });
 });
