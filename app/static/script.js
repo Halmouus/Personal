@@ -39,19 +39,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Fetch offline notifications
-    setTimeout(() => { // Delay fetching to avoid race condition
+    // Fetch notifications after a delay to ensure all socket messages are processed
+    setTimeout(() => {
         fetch('/notifications')
             .then(response => response.json())
             .then(notifications => {
                 notifications.forEach(notification => {
                     if (!recentNotifications.has(notification.id)) {
-                        recentNotifications.add(notification.id);
                         alert(`You received ${notification.amount} tokens from ${notification.sender} at ${notification.timestamp}`);
                     }
                 });
             });
-    }, 1000); 
+    }, 5000);
 
     const links = document.querySelectorAll('nav a');
     links.forEach(link => {
