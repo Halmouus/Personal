@@ -28,11 +28,12 @@ window.onload = function() {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
+    const userId = document.body.getAttribute('data-user-id');
     const socket = io();
 
     socket.on('new_notification', function(data) {
-        if (data.recipient_id === '{{ current_user.id }}') {
-            alert(`You received ${data.amount} tokens from ${data.sender}`);
+        if (data.recipient_id === userId) {
+            alert(`Yoo! ${data.sender} has sent you ${data.amount} habibas for absolutely no reason! Spend them wisely ;) `);
         }
     });
 
