@@ -14,6 +14,7 @@ class User(UserMixin, db.Model):
     profile_picture = db.Column(db.String(150), nullable=True)
     sessions = db.relationship('LoginSession', backref='user', lazy=True)
     statuses = db.relationship('Status', backref='user', lazy=True)
+    items = db.relationship('UserItem', back_populates='user', lazy=True)
 
     def set_password(self, password):
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -99,6 +100,7 @@ class Item(db.Model):
     price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.Text, nullable=True)
     image_url = db.Column(db.String(255), nullable=True)
+    users = db.relationship('UserItem', back_populates='item', lazy=True)
 
     category = db.relationship('Category', backref=db.backref('items', lazy=True))
 

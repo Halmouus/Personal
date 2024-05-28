@@ -375,7 +375,7 @@ def item_detail(item_id):
 def purchase_item(item_id):
     item = Item.query.get_or_404(item_id)
 
-    if current_user.items.filter(UserItem.item_id == item.id).first():
+    if UserItem.query.filter_by(user_id=current_user.id, item_id=item.id).first():
         flash('You already own this item, Habiba!', 'danger')
         return redirect(url_for('item_detail', item_id=item_id))
     
