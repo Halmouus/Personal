@@ -344,18 +344,28 @@ def view_profile(user_id):
     statuses = Status.query.filter_by(user_id=user.id).order_by(Status.timestamp.desc()).all()
     return render_template('view_profile.html', user=user, statuses=statuses)
 
+
 @app.route('/notifications')
 @login_required
 def notifications():
+    # Fetch unread notifications
     notifications = Notification.query.filter_by(recipient_id=current_user.id, read=False).all()
+
+    # Prepare notification data for JSON response
+    notification_data = [{
+        'sender': notification.sender.pseudo,
+        'amount': notification.amount,
+        'timestamp': notification.timestamp.strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp for JSON serialization
+    } for notification in notifications]
+
+    # Mark notifications as read
     for notification in notifications:
         notification.read = True
     db.session.commit()
-    return jsonify([{
-        'sender': notification.sender.pseudo,
-        'amount': notification.amount,
-        'timestamp': notification.timestamp
-    } for notification in notifications])
+
+    # Return the notifications as JSON
+    return jsonify(notification_data)
+
 
 @app.route('/shop')
 @login_required

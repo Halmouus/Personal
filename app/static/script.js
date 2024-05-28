@@ -31,13 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const userId = document.body.getAttribute('data-user-id');
     const socket = io();
 
-    socket.on('new_notification', function(data) {
-        if (data.recipient_id === userId) {
-            alert(`Yoo! ${data.sender} has sent you ${data.amount} habibas for absolutely no reason! Spend them wisely ;) `);
-        }
-    });
-
-    // Fetch offline notifications
+    // Fetch offline notifications first to mark them read before any real-time notifications
     fetch('/notifications')
         .then(response => response.json())
         .then(notifications => {
@@ -45,6 +39,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert(`You received ${notification.amount} tokens from ${notification.sender} at ${notification.timestamp}`);
             });
         });
+
+    socket.on('new_notification', function(data) {
+        if (data.recipient_id === userId) {
+            alert(`Yoo! ${data.sender} has sent you ${data.amount} habibas for absolutely no reason! Spend them wisely ;) `);
+        }
+    });
 
     const links = document.querySelectorAll('nav a');
     links.forEach(link => {
