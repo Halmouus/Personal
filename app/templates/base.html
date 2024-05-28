@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+        
         body.dark-mode {
             background-color: #121212;
             color: #e0e0e0;
@@ -188,7 +189,16 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">Profile</a></li>
                     <a class="nav-link" href="{{ url_for('network') }}">Habiba Network</a>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('share_tokens') }}">Give Love</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('shop') }}">Shop</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            HabibaShop
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="{{ url_for('shop') }}">Shop</a>
+                            <a class="dropdown-item" href="#marketplace">Marketplace</a>
+                            <a class="dropdown-item" href="#inventory">Inventory</a>
+                        </div>
+                    </li>                    
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
                 {% else %}
@@ -226,6 +236,6 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
