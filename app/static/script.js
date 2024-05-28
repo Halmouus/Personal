@@ -30,21 +30,28 @@ window.onload = function() {
 document.addEventListener('DOMContentLoaded', function() {
     const userId = document.body.getAttribute('data-user-id');
     const socket = io();
-
-    // Fetch offline notifications first to mark them read before any real-time notifications
-    fetch('/notifications')
-        .then(response => response.json())
-        .then(notifications => {
-            notifications.forEach(notification => {
-                alert(`You received ${notification.amount} tokens from ${notification.sender} at ${notification.timestamp}`);
-            });
-        });
+    let recentNotifications = new Set(); // To track recent notifications
 
     socket.on('new_notification', function(data) {
-        if (data.recipient_id === userId) {
+        if (data.recipient_id === userId && !recentNotifications.has(data.id)) {
+            recentNotifications.add(data.id);
             alert(`Yoo! ${data.sender} has sent you ${data.amount} habibas for absolutely no reason! Spend them wisely ;) `);
         }
     });
+
+    // Fetch offline notifications
+    setTimeout(() => { // Delay fetching to avoid race condition
+        fetch('/notifications')
+            .then(response => response.json())
+            .then(notifications => {
+                notifications.forEach(notification => {
+                    if (!recentNotifications.has(notification.id)) {
+                        recentNotifications.add(notification.id);
+                        alert(`You received ${notification.amount} tokens from ${notification.sender} at ${notification.timestamp}`);
+                    }
+                });
+            });
+    }, 1000); 
 
     const links = document.querySelectorAll('nav a');
     links.forEach(link => {
