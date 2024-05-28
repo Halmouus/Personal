@@ -349,30 +349,24 @@ def view_profile(user_id):
 @app.route('/notifications')
 @login_required
 def notifications():
-    # Start a transaction
-    with db.session.begin():
-        # Fetch unread notifications and immediately mark them as read
-        notifications = Notification.query.filter_by(
-            recipient_id=current_user.id, read=False
-        ).with_for_update().all()
+    # Fetch unread notifications
+    notifications = Notification.query.filter_by(recipient_id=current_user.id, read=False).all()
 
-        # Prepare notification data for JSON response
-        notification_data = [{
-            'id': notification.id,
-            'sender': notification.sender.pseudo,
-            'amount': notification.amount,
-            'timestamp': notification.timestamp.strftime('%Y-%m-%d %H:%M:%S')
-        } for notification in notifications]
+    # Prepare notification data for JSON response
+    notification_data = [{
+        'id': notification.id,  # Ensure each notification has a unique identifier
+        'sender': notification.sender.pseudo,
+        'amount': notification.amount,
+        'timestamp': notification.timestamp.strftime('%Y-%m-%d %H:%M:%S')  # Format timestamp
+    } for notification in notifications]
 
-        # Mark notifications as read
-        for notification in notifications:
-            notification.read = True
-
-    # Commit the changes
+    # Mark notifications as read after sending
+    for notification in notifications:
+        notification.read = True
     db.session.commit()
 
-    # Return the notifications as JSON
     return jsonify(notification_data)
+
 
 @app.route('/shop')
 @login_required

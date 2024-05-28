@@ -30,7 +30,7 @@ window.onload = function() {
 document.addEventListener('DOMContentLoaded', function() {
     const userId = document.body.getAttribute('data-user-id');
     const socket = io();
-    let recentNotifications = new Set(); // To track recent notifications
+    let recentNotifications = new Set();  // Keep track of recent notifications
 
     socket.on('new_notification', function(data) {
         if (data.recipient_id === userId && !recentNotifications.has(data.id)) {
@@ -39,18 +39,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Fetch notifications after a delay to ensure all socket messages are processed
-    setTimeout(() => {
-        fetch('/notifications')
-            .then(response => response.json())
-            .then(notifications => {
-                notifications.forEach(notification => {
-                    if (!recentNotifications.has(notification.id)) {
-                        alert(`You received ${notification.amount} tokens from ${notification.sender} at ${notification.timestamp}`);
-                    }
-                });
+    // Fetch offline notifications only once on load
+    fetch('/notifications')
+        .then(response => response.json())
+        .then(notifications => {
+            notifications.forEach(notification => {
+                if (!recentNotifications.has(notification.id)) {
+                    recentNotifications.add(notification.id);
+                    alert(`You received ${notification.amount} tokens from ${notification.sender} at ${notification.timestamp}`);
+                }
             });
-    }, 5000);
+        });
 
     const links = document.querySelectorAll('nav a');
     links.forEach(link => {
