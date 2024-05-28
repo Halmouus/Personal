@@ -68,21 +68,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 0);
     });
 
-    // Dropdown toggle functionality
+    // Improved Dropdown toggle functionality
     const dropdownToggles = document.querySelectorAll('.nav-item.dropdown');
 
     dropdownToggles.forEach(toggle => {
         toggle.addEventListener('click', function(event) {
             event.stopPropagation(); // Prevent click event from bubbling up to document
             const menu = this.querySelector('.dropdown-menu');
-            const isVisible = window.getComputedStyle(menu).display !== 'none';
+            const isVisible = menu.style.display === 'block';
 
             // Close all open menus first
             document.querySelectorAll('.dropdown-menu').forEach(dm => {
-                dm.style.display = 'none';
+                if (dm !== menu) dm.style.display = 'none'; // Close other menus
             });
 
-            // Toggle this menu's visibility
+            // Toggle this menu's visibility based on current state
             menu.style.display = isVisible ? 'none' : 'block';
         });
     });
