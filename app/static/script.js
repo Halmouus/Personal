@@ -73,13 +73,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     dropdownToggles.forEach(toggle => {
         toggle.addEventListener('click', function(event) {
-            event.stopPropagation(); // Prevent click event from bubbling up to document
+            event.preventDefault(); // Prevent default behavior to manage manually
             const menu = this.querySelector('.dropdown-menu');
             const isVisible = menu.style.display === 'block';
 
             // Close all open menus first
             document.querySelectorAll('.dropdown-menu').forEach(dm => {
-                if (dm !== menu) dm.style.display = 'none'; // Close other menus
+                dm.style.display = 'none'; // Close other menus
             });
 
             // Toggle this menu's visibility based on current state
