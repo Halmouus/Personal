@@ -412,5 +412,7 @@ def messages():
 @app.route('/inventory')
 @login_required
 def inventory():
-    # Logic to retrieve inventory items goes here
-    pass
+    user_items = UserItem.query.filter_by(user_id=current_user.id).all()
+    items = [ui.item for ui in user_items]
+    return render_template('inventory.html', items=items)
+
