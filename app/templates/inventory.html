@@ -17,11 +17,7 @@
                     <button class="btn btn-info" onclick="toggleDetails(event)">Show Details</button>
                     <div class="item-details" style="display:none;">
                         <p>Category: {{ item.category.name }}</p>
-                        {% if item.timestamp %}
-                            <p>Acquired on: {{ item.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                        {% else %}
-                            <p>Acquired on: Unknown</p>
-                        {% endif %}
+                        <p>Acquired on: Unknown</p>
                     </div>
                 </div>
             </div>
