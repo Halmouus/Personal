@@ -413,6 +413,7 @@ def messages():
 @login_required
 def inventory():
     user_items = UserItem.query.filter_by(user_id=current_user.id).all()
-    items = [ui.item for ui in user_items]
+    items = [{'item': ui.item, 'timestamp': ui.timestamp} for ui in user_items]
     return render_template('inventory.html', items=items)
+
 

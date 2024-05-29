@@ -107,6 +107,7 @@ class Item(db.Model):
 class UserItem(db.Model):
     user_id = db.Column(db.String(36), db.ForeignKey('user.id'), primary_key=True)
     item_id = db.Column(db.String(36), db.ForeignKey('item.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref=db.backref('user_items', lazy=True))
     item = db.relationship('Item', backref=db.backref('user_items', lazy=True))
