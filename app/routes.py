@@ -402,3 +402,15 @@ def purchase_item(item_id):
     flash('Item purchased successfully!', 'success')
     return redirect(url_for('shop'))
 
+@app.route('/messages')
+@login_required
+def messages():
+    # Logic to retrieve messages goes here
+    pass
+
+
+@app.route('/inventory')
+@login_required
+def inventory():
+    # Logic to retrieve inventory items goes here
+    pass

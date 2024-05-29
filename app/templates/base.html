@@ -21,7 +21,17 @@
                 {% if current_user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">Profile</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="myHabibaDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            MyHabiba
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="myHabibaDropdown">
+                            <a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a>
+                            <a class="dropdown-item" href="{{ url_for('messages') }}">Messages</a>
+                            <a class="dropdown-item" href="{{ url_for('inventory') }}">Inventory</a>
+                        </div>
+                    </li>
+                    
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('network') }}">Habiba Network</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('share_tokens') }}">Give Love</a></li>
                     <li class="nav-item dropdown">
