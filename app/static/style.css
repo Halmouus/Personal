@@ -227,12 +227,12 @@ input:checked + .slider:before {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 400px;  /* Adjust height as necessary */
+    height: 500px;  /* Adjust height as necessary */
     background-color: #f8f9fa; /* Light background for the box */
     border: 2px dashed #ccc;  /* Dashed border */
     border-radius: 10px;  /* Rounded corners */
     margin: 20px;
-    padding: 20px;
+    padding: 250px;
 }
 
 .empty-message {
@@ -258,4 +258,13 @@ input:checked + .slider:before {
 .btn-primary:hover {
     background-color: #0056b3;  /* Darker on hover */
     border-color: #0056b3;
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+.btn-primary:hover i {
+    animation: wiggle 0.5s ease-in-out;
 }
