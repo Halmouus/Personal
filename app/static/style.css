@@ -218,8 +218,10 @@ input:checked + .slider:before {
 }
 
 .item-details {
-    text-align: left;
-    padding-top: 10px;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
 }
 
 .empty-inventory {
@@ -267,4 +269,14 @@ input:checked + .slider:before {
 
 .btn-primary:hover i {
     animation: wiggle 0.5s ease-in-out;
+}
+
+.nav-tabs .nav-link {
+    color: #495057;
+}
+
+.nav-tabs .nav-link.active {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #dee2e6 #dee2e6 #fff;
 }
