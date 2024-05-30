@@ -221,3 +221,41 @@ input:checked + .slider:before {
     text-align: left;
     padding-top: 10px;
 }
+
+.empty-inventory {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;  /* Adjust height as necessary */
+    background-color: #f8f9fa; /* Light background for the box */
+    border: 2px dashed #ccc;  /* Dashed border */
+    border-radius: 10px;  /* Rounded corners */
+    margin: 20px;
+    padding: 20px;
+}
+
+.empty-message {
+    font-size: 24px;  /* Larger text */
+    color: #333;  /* Dark grey color for the text */
+    margin-bottom: 20px;  /* Space between message and button */
+}
+
+.btn-primary {
+    background-color: #007bff;  /* Standard Bootstrap primary button color */
+    border-color: #007bff;
+    padding: 10px 20px;  /* Padding for larger button */
+    font-size: 18px;  /* Larger font size for the button */
+    display: inline-flex;
+    align-items: center;  /* Center icon and text */
+    column-gap: 8px;  /* Space between icon and text */
+}
+
+.btn-primary i {
+    font-size: 20px;  /* Larger icon */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;  /* Darker on hover */
+    border-color: #0056b3;
+}
