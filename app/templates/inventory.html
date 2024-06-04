@@ -32,6 +32,9 @@
             {% else %}
                 <div class="empty-inventory">
                     <p class="empty-message">No items in this category.</p>
+                    <a href="{{ url_for('shop') }}" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart"></i> Go to Shop
+                    </a>        
                 </div>
             {% endif %}
         </div>
