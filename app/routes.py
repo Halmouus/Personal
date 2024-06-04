@@ -409,12 +409,24 @@ def messages():
     pass
 
 
+from collections import defaultdict
+
 @app.route('/inventory')
 @login_required
 def inventory():
     user_items = UserItem.query.filter_by(user_id=current_user.id).all()
     items = [ui.item for ui in user_items]
     categories = Category.query.all()
-    return render_template('inventory.html', items=items, categories=categories)
+
+    # Organize items by category
+    categorized_items = defaultdict(list)
+    for item in items:
+        categorized_items[item.category.name].append(item)
+
+    # Ensure each category is represented even if no items are present
+    categorized_items_full = {cat.name: categorized_items[cat.name] for cat in categories}
+
+    return render_template('inventory.html', categorized_items=categorized_items_full)
+
 
 
