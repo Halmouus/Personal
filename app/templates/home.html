@@ -5,7 +5,7 @@
     <div class="container">
         <canvas id="wheel"></canvas>
         <button id="spin-btn">Spin</button>
-        <img src="{{ url_for('static', filename='spinner-arrow.svg') }}" alt="spinner-arrow" />
+        <img src="{{ url_for('static', filename='spin_arrow.png') }}" alt="spinner-arrow" />
     </div>
     <div id="final-value">
         <p>Click On The Spin Button To Start</p>
@@ -13,5 +13,5 @@
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="{{ url_for('static', filename='spin-script.js') }}"></script>
 {% endblock %}
