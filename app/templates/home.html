@@ -5,4 +5,29 @@
 {% block content %}
     <h1>Welcome To ZamLBook</h1>
     <p>This is the ZamLBook frontpage! Enjoy Zemlin' around!</p>
+    <div class="wheel-container">
+        <div class="wheel" id="wheel">
+            <div class="segment">Prize 1</div>
+            <div class="segment">Prize 2</div>
+            <div class="segment">Prize 3</div>
+            <div class="segment">Prize 4</div>
+            <!-- Add as many segments as you need -->
+        </div>
+        <button onclick="spin()">Spin!</button>
+    </div>
 {% endblock %}
+
+<script>
+    function spin() {
+        const wheel = document.getElementById('wheel');
+        let deg = Math.floor(5000 + Math.random() * 5000); // Random degree from 5000 to 10000
+        wheel.style.transition = 'all 10s ease-out';
+        wheel.style.transform = `rotate(${deg}deg)`;
+        wheel.addEventListener('transitionend', () => {
+            wheel.style.transition = 'none';
+            const actualDeg = deg % 360;
+            wheel.style.transform = `rotate(${actualDeg}deg)`;
+        });
+    }
+    </script>
+    
