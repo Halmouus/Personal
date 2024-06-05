@@ -1,34 +1,20 @@
-{% extends "base.html" %}
-
-{% block title %}Home Page{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-    <h1>Welcome To ZamLBook</h1>
-    <p>This is the ZamLBook frontpage! Enjoy Zemlin' around!</p>
-    <div class="wheel-container">
-        <div class="wheel" id="wheel">
-            <div class="segment">Prize 1</div>
-            <div class="segment">Prize 2</div>
-            <div class="segment">Prize 3</div>
-            <div class="segment">Prize 4</div>
-            <div class="segment">Prize 5</div>
-            <div class="segment">Prize 6</div>
-            <!-- Add as many segments as you need -->
+<div class="container mt-4">
+    <h1>Spin the Wheel!</h1>
+    <div class="wrapper">
+        <div class="container">
+            <canvas id="wheel"></canvas>
+            <button id="spin-btn">Spin</button>
+            <img src="{{ url_for('static', filename='spinner-arrow.svg') }}" alt="spinner-arrow" />
         </div>
-        <button onclick="spin()">Spin!</button>
+        <div id="final-value">
+            <p>Click On The Spin Button To Start</p>
+        </div>
     </div>
-    <script>
-        function spin() {
-            const wheel = document.getElementById('wheel');
-            let deg = Math.floor(5000 + Math.random() * 5000); // Generate a random spin degree between 5000 and 10000
-            wheel.style.transition = 'transform 10s ease-out'; // Smooth transition for 10 seconds
-            wheel.style.transform = `rotate(${deg}deg)`;
-            wheel.addEventListener('transitionend', () => {
-                // Reset rotation degree after spin to allow consistent behavior on subsequent spins
-                wheel.style.transition = 'none';
-                const actualDeg = deg % 360;
-                wheel.style.transform = `rotate(${actualDeg}deg)`;
-            });
-        }
-        </script>             
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
+<script src="{{ url_for('static', filename='spin-script.js') }}"></script>
 {% endblock %}
