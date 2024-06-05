@@ -287,40 +287,70 @@ input:checked + .slider:before {
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
   }
-  
   body {
+    height: 100vh;
     background: linear-gradient(135deg, #c3a3f1, #6414e9);
   }
-
   .wrapper {
-    width: 100%;
-    max-width: 600px;
+    width: 90%;
+    max-width: 34.37em;
+    max-height: 90vh;
     background-color: #ffffff;
-    margin: 0 auto;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.25);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    padding: 3em;
+    border-radius: 1em;
+    box-shadow: 0 4em 5em rgba(27, 8, 53, 0.2);
   }
   .container {
     position: relative;
-    text-align: center;
+    width: 100%;
+    height: 100%;
   }
   #wheel {
-    width: 100%;
-    aspect-ratio: 1;
+    max-height: inherit;
+    width: inherit;
+    top: 0;
+    padding: 0;
   }
   #spin-btn {
-    margin-top: 20px;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    height: 26%;
+    width: 26%;
+    border-radius: 50%;
     cursor: pointer;
-    background-color: #ffcc00;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
+    border: 0;
+    background: radial-gradient(#fdcf3b 50%, #d88a40 85%);
+    color: #c66e16;
+    text-transform: uppercase;
+    font-size: 1.8em;
+    letter-spacing: 0.1em;
+    font-weight: 600;
   }
-  #final-value p {
-    margin-top: 20px;
-    font-size: 18px;
-    color: #333;
+  img {
+    position: absolute;
+    width: 4em;
+    top: 45%;
+    right: -8%;
+  }
+  #final-value {
+    font-size: 1.5em;
+    text-align: center;
+    margin-top: 1.5em;
+    color: #202020;
+    font-weight: 500;
+  }
+  @media screen and (max-width: 768px) {
+    .wrapper {
+      font-size: 12px;
+    }
+    img {
+      right: -5%;
+    }
   }
   
