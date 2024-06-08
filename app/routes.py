@@ -9,6 +9,7 @@ from .models import User, LoginSession, Token, TokenTransaction, Status, LikeDis
 from sqlalchemy import update
 
 @app.route('/')
+@login_required
 def home():
     return render_template('home.html')
 
