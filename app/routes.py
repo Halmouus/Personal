@@ -11,7 +11,7 @@ from sqlalchemy import update
 @app.route('/')
 @login_required
 def home():
-    return render_template('home.html')
+    return render_template('dashboard.html')
 
 @app.route('/register', methods=['GET', 'POST'], endpoint='register')
 def register_user():
