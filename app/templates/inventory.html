@@ -21,6 +21,9 @@
                         <h3 class="item-name">{{ item.name }}</h3>
                         <p class="item-price"><i class="fas fa-coins" style="color: gold;"></i> {{ item.price }}</p>
                         <button class="details-button" onclick="toggleDetails(event)">Show Details</button>
+                        {% if item.category.name == "Avatars" %}
+                            <button onclick="location.href='{{ url_for('set_profile_picture', item_id=item.id) }}'" class="btn btn-primary">Set as Profile Picture</button>
+                        {% endif %}
                         <div class="item-details" style="display:none;">
                             <p>Description: {{ item.description }}</p>
                             <p>Category: {{ item.category.name }}</p>

@@ -430,4 +430,15 @@ def inventory():
     return render_template('inventory.html', categorized_items=categorized_items_full)
 
 
+@app.route('/set_profile_picture/<item_id>', methods=['GET'])
+@login_required
+def set_profile_picture(item_id):
+    item = Item.query.filter_by(id=item_id).first()
+    if item and item.category.name == "Avatars":
+        current_user.profile_picture = item.image_url
+        db.session.commit()
+        flash('Profile picture updated.', 'success')
+    else:
+        flash('Invalid item selected.', 'error')
+    return redirect(url_for('inventory'))
 
