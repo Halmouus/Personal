@@ -4,7 +4,7 @@
 <h1>{{ user.pseudo }}'s Profile</h1>
 {% if user.profile_picture %}
     <div class="mt-4">
-        <img src="{{ url_for('static', filename='profile_pics/' ~ user.profile_picture) }}" alt="Profile Picture" class="profile-pic">
+        <img src="{{ url_for('static', filename=current_user.profile_picture|default('profile_pics/default.png')) }}" alt="Profile Picture" class="profile-pic">
     </div>
 {% else %}
     <div class="mt-4">

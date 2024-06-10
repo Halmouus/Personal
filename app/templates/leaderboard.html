@@ -24,7 +24,7 @@
                     <a href="{{ url_for('view_profile', user_id=user.id) }}" class="pseudo-link">
                         {{ user.pseudo }}
                     </a>
-                    <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_picture or 'default.png')) }}" class="miniature" alt="Profile Picture of {{ user.pseudo }}">
+                    <img src="{{ url_for('static', filename=(user.profile_picture or 'profile_pics/default.png')) }}" class="miniature" alt="Profile Picture of {{ user.pseudo }}">
                 </td>
                 <td><i class="fas fa-coins" style="color: gold;"></i> {{ user.tokens }}</td>
             </tr>
