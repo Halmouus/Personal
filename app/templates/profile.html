@@ -23,7 +23,7 @@
 
     {% if current_user.profile_picture %}
     <div class="mt-4">
-        <img src="{{ url_for('static', filename=(current_user.profile_picture | default('profile_pics/default.png')).replace('avatars/', '').replace('profile_pics/', '') | prepend('profile_pics/' if 'avatars/' not in current_user.profile_picture else 'avatars/')) }}" alt="Profile Picture" class="profile-pic">
+        <img src="{{ url_for('static', filename=((current_user.profile_picture | default('profile_pics/default.png')).split('/')[-1] | replace('avatars/', '') | replace('profile_pics/', '') | default('default.png', true))) }}" alt="Profile Picture" class="profile-pic">
     </div>
     {% else %}
     <div class="mt-4">
