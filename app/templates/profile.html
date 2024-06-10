@@ -23,7 +23,7 @@
 
     {% if current_user.profile_picture %}
     <div class="mt-4">
-        <img src="{{ url_for('static', filename=current_user.profile_picture|default('profile_pics/default.png')) }}" alt="Profile Picture" class="profile-pic">
+        <img src="{{ url_for('static', filename=(('avatars/' if current_user.profile_picture.startswith('avatars/') else 'profile_pics/') + (current_user.profile_picture if current_user.profile_picture else 'default.png'))) }}" alt="Profile Picture" class="profile-pic">
     </div>
     {% else %}
     <div class="mt-4">
