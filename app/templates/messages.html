@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="list-group" id="user-list">
+                <!-- Users with whom conversations exist will be loaded here -->
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="chat-box">
+                <div class="chat-messages" id="chat-messages" style="height: 400px; overflow-y: scroll;">
+                    <!-- Messages will be loaded here -->
+                </div>
+                <div class="chat-input mt-3">
+                    <form id="send-message-form">
+                        <input type="text" id="message-text" class="form-control" placeholder="Type a message...">
+                        <button type="submit" class="btn btn-primary mt-2">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+<style>
+    .chat-messages {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        height: 400px; /* Fixed height with scroll */
+        overflow-y: scroll;
+    }
+
+    .chat-message {
+        margin-bottom: 15px;
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #e2e2e2;
+    }
+
+    .list-group-item {
+        cursor: pointer;
+    }
+
+    .list-group-item:hover {
+        background-color: #f0f0f0;
+    }
+
+    .chat-input form {
+        display: flex;
+        margin-top: 15px;
+    }
+
+    .chat-input input[type="text"] {
+        flex: 1; /* Takes up the majority of the space */
+        margin-right: 10px;
+    }
+
+    .chat-input button {
+        white-space: nowrap; /* Keeps the button text on one line */
+    }
+</style>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let selectedUserId = null;  // To track the currently selected user for messaging
+
+        // Fetch users immediately when the page loads
+        fetchUsers();
+
+        // Form submission event for sending messages
+        const messageForm = document.getElementById('send-message-form');
+        messageForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const messageText = document.getElementById('message-text').value;
+            if (messageText && selectedUserId) {
+                sendMessage(selectedUserId, messageText);
+                document.getElementById('message-text').value = ''; // Clear input after sending
+            }
+        });
+
+        function fetchUsers() {
+            fetch('/fetch-users')
+                .then(response => response.json())
+                .then(data => updateUsersList(data.users))
+                .catch(error => console.error('Error fetching users:', error));
+        }
+
+        function updateUsersList(users) {
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = ''; // Clear previous user list
+            users.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'list-group-item list-group-item-action';
+                userDiv.textContent = user.pseudo;
+                userDiv.onclick = () => {
+                    selectedUserId = user.id; // Set the current user to the selected one
+                    fetchMessages(user.id);
+                };
+                userList.appendChild(userDiv);
+            });
+        }
+
+        function fetchMessages(userId) {
+            fetch(`/fetch-messages/${userId}`)
+                .then(response => response.json())
+                .then(data => updateMessagesArea(data.messages))
+                .catch(error => console.error('Error fetching messages:', error));
+        }
+
+        function updateMessagesArea(messages) {
+            const messagesArea = document.getElementById('chat-messages');
+            messagesArea.innerHTML = ''; // Clear the messages area
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-message';
+                messageDiv.textContent = message.content;
+                messagesArea.appendChild(messageDiv);
+            });
+            messagesArea.scrollTop = messagesArea.scrollHeight; // Auto-scroll to the latest message
+        }
+
+        function sendMessage(receiverId, messageText) {
+            fetch('/send-message', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({receiverId: receiverId, messageText: messageText})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fetchMessages(receiverId); // Reload messages to show the new one
+                } else {
+                    alert('Message sending failed');
+                }
+            })
+            .catch(error => console.error('Error sending message:', error));
+        }
+    });
+    </script>
+    

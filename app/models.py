@@ -111,3 +111,20 @@ class UserItem(db.Model):
 
     user = db.relationship('User', backref=db.backref('user_items', lazy=True))
     item = db.relationship('Item', backref=db.backref('user_items', lazy=True))
+
+from datetime import datetime
+from . import db
+
+class Message(db.Model):
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    sender_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
+    receiver_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    read = db.Column(db.Boolean, default=False)
+
+    sender = db.relationship('User', foreign_keys=[sender_id], backref=db.backref('messages_sent', lazy='dynamic'))
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref=db.backref('messages_received', lazy='dynamic'))
+
+    def __repr__(self):
+        return f'<Message {self.body}>'

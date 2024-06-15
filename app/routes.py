@@ -5,7 +5,7 @@ from flask_login import current_user, login_user as flask_login_user, logout_use
 from . import socketio
 from . import app, db
 from datetime import datetime
-from .models import User, LoginSession, Token, TokenTransaction, Status, LikeDislike, Notification, Category, UserItem, Item
+from .models import User, LoginSession, Token, TokenTransaction, Status, LikeDislike, Notification, Category, UserItem, Item, Message
 from sqlalchemy import update
 
 @app.route('/')
@@ -157,7 +157,7 @@ def share_tokens():
             return redirect(url_for('share_tokens'))
         
         if recipient_username == current_user.pseudo:
-            flash('You cannot send tokens to yourself', 'danger')
+            flash('You cannot send Habibas to yourself. Are you pansexual?', 'danger')
             return redirect(url_for('share_tokens'))  
              
         try:
@@ -176,7 +176,7 @@ def share_tokens():
             return redirect(url_for('share_tokens'))
         
         if current_user.tokens < amount:
-            flash('Not enough tokens!', 'danger')
+            flash('Not enough Habibas! You are broke as hell!', 'danger')
             return redirect(url_for('share_tokens'))
 
         current_user.tokens -= amount
@@ -206,7 +206,7 @@ def share_tokens():
             'amount': amount
         })
 
-        flash('Tokens successfully shared.', 'success')
+        flash('Love successfully shared. You are gay now!', 'success')
         return redirect(url_for('share_tokens'))
     
     return render_template('share_tokens.html')
@@ -392,7 +392,7 @@ def purchase_item(item_id):
         return redirect(url_for('item_detail', item_id=item_id))
     
     if current_user.tokens < item.price:
-        flash('Soory, cannot afford it, because you are poor! Got get some Habibas!', 'danger')
+        flash('Sorry, cannot afford it, because you are poor! Get some Habibas!', 'danger')
         return redirect(url_for('shop'))
     
     current_user.tokens -= item.price
@@ -402,13 +402,6 @@ def purchase_item(item_id):
     
     flash('Item purchased successfully!', 'success')
     return redirect(url_for('shop'))
-
-@app.route('/messages')
-@login_required
-def messages():
-    # Logic to retrieve messages goes here
-    pass
-
 
 from collections import defaultdict
 
@@ -442,3 +435,55 @@ def set_profile_picture(item_id):
         flash('Invalid item selected.', 'error')
     return redirect(url_for('inventory'))
 
+@app.route('/send_message', methods=['POST'])
+@login_required
+def send_message():
+    receiver_id = request.form.get('receiver_id')
+    message_text = request.form.get('message')
+    if receiver_id and message_text:
+        message = Message(sender_id=current_user.id, receiver_id=receiver_id, body=message_text)
+        db.session.add(message)
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Message sent!'})
+    return jsonify({'status': 'error', 'message': 'Failed to send message.'})
+
+@app.route('/conversations/<user_id>')
+@login_required
+def conversations(user_id):
+    messages_sent = Message.query.filter_by(sender_id=current_user.id, receiver_id=user_id).all()
+    messages_received = Message.query.filter_by(sender_id=user_id, receiver_id=current_user.id).all()
+    # Combine and sort the messages
+    messages = sorted(messages_sent + messages_received, key=lambda x: x.timestamp)
+    return jsonify({'messages': [message.body for message in messages]})
+
+@app.route('/list_conversations')
+@login_required
+def list_conversations():
+    sent_users = User.query.join(Message, User.id == Message.receiver_id).filter(Message.sender_id == current_user.id).distinct()
+    received_users = User.query.join(Message, User.id == Message.sender_id).filter(Message.receiver_id == current_user.id).distinct()
+    all_users = {user.id: user.pseudo for user in set(sent_users).union(set(received_users))}
+    return jsonify(all_users)
+
+@app.route('/fetch-users')
+@login_required
+def fetch_users():
+    # Fetch users with whom the current user has exchanged messages
+    users = User.query.join(Message, db.or_(Message.sender_id == current_user.id, Message.receiver_id == current_user.id)).distinct().all()
+    return jsonify(users=[{'id': user.id, 'pseudo': user.pseudo} for user in users])
+
+@app.route('/fetch-messages/<int:user_id>')
+@login_required
+def fetch_messages(user_id):
+    # Fetch messages between the current user and the specified user_id
+    messages = Message.query.filter(
+        db.or_(
+            db.and_(Message.sender_id == current_user.id, Message.receiver_id == user_id),
+            db.and_(Message.sender_id == user_id, Message.receiver_id == current_user.id)
+        )
+    ).order_by(Message.timestamp.asc()).all()
+    return jsonify(messages=[{'content': message.content, 'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S')} for message in messages])
+
+@app.route('/messages')
+@login_required
+def messages():
+    return render_template('messages.html')
